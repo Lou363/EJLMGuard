@@ -50,6 +50,14 @@ public class SignatureUtilities {
         return hashString.toString();
     }
 
-    
-
+    // Getters
+    public String getMD5() {
+        return md5;
+    }
+    public String getSha1() {
+        return sha1;
+    }
+    public String getSha256() {
+        return sha256;
+    }
 }

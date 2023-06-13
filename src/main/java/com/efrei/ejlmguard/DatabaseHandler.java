@@ -3,8 +3,15 @@ package com.efrei.ejlmguard;
 import org.iq80.leveldb.*;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 
+import com.google.gson.Gson;
+import java.io.BufferedReader;
 import java.io.File;
+import java.io.FileReader;
+import java.io.FileWriter;
 import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.HashMap;
+import java.util.Map;
 
 public class DatabaseHandler {
 
@@ -68,6 +75,82 @@ public class DatabaseHandler {
                 String key = asString(iterator.peekNext().getKey());
                 String value = asString(iterator.peekNext().getValue());
                 System.out.println(key + " = " + value);
+            }
+        }
+    }
+
+
+    /* ##########################################
+     * #         IMPORT AND EXPORT METHODS      #
+    *  ##########################################*/
+    public void exportToJSON(String jsonFilePath) throws IOException {
+
+        Gson gson = new Gson();
+
+        try {
+            Map<String, String> data = new HashMap<>();
+            
+            try (DBIterator iterator = database.iterator()) {
+                for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+                    byte[] keyBytes = iterator.peekNext().getKey();
+                    byte[] valueBytes = iterator.peekNext().getValue();
+                    
+                    String key = new String(keyBytes, StandardCharsets.UTF_8);
+                    String value = new String(valueBytes, StandardCharsets.UTF_8);
+                    
+                    data.put(key, value);
+                }
+            }
+            
+            String jsonData = gson.toJson(data);
+            
+            try (FileWriter writer = new FileWriter(jsonFilePath)) {
+                writer.write(jsonData);
+            }
+            
+            System.out.println("Export completed successfully.");
+        } finally {
+            if (database != null) {
+                database.close();
+            }
+        }
+    }
+
+    public void importFromJSON(String jsonFilePath) throws IOException {
+        Gson gson = new Gson();
+
+        try {
+            StringBuilder jsonData = new StringBuilder();
+            try (BufferedReader reader = new BufferedReader(new FileReader(jsonFilePath))) {
+                String line;
+                while ((line = reader.readLine()) != null) {
+                    jsonData.append(line);
+                }
+            }
+
+            HashMap<String, String> data = gson.fromJson(jsonData.toString(), HashMap.class);
+
+            WriteBatch batch = database.createWriteBatch();
+            try {
+                for (Map.Entry<String, String> entry : data.entrySet()) {
+                    String key = entry.getKey();
+                    String value = entry.getValue();
+                    
+                    byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+                    byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
+                    
+                    batch.put(keyBytes, valueBytes);
+                }
+                
+                database.write(batch);
+            } finally {
+                batch.close();
+            }
+
+            System.out.println("Import completed successfully.");
+        } finally {
+            if (database != null) {
+                database.close();
             }
         }
     }
