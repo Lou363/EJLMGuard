@@ -1,0 +1,53 @@
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.security.DigestInputStream;
+import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
+
+public class SignatureUtilities {
+
+    private String md5;
+    private String sha1;
+    private String sha256;
+    private File file;
+    
+    public SignatureUtilities(File file){
+        this.file = file;
+        // We check the file exists
+        if(!file.exists()){
+            throw new IllegalArgumentException("File does not exist");
+        }
+        try {
+            md5 = calculateHash("MD5");
+            sha1 = calculateHash("SHA-1");
+            sha256 = calculateHash("SHA-256");
+        } catch (NoSuchAlgorithmException | IOException e) {
+            e.printStackTrace();
+        }
+
+    }
+
+    private String calculateHash(String algorithm) throws NoSuchAlgorithmException, IOException {
+        MessageDigest md = MessageDigest.getInstance(algorithm);
+        try (FileInputStream fis = new FileInputStream(file);
+             DigestInputStream dis = new DigestInputStream(fis, md)) {
+            while (dis.read() != -1) {
+                // Read the file stream to update the digest
+            }
+        }
+        byte[] hashBytes = md.digest();
+        StringBuilder hashString = new StringBuilder();
+        for (byte hashByte : hashBytes) {
+            String hex = Integer.toHexString(0xff & hashByte);
+            if (hex.length() == 1) {
+                hashString.append('0');
+            }
+            hashString.append(hex);
+        }
+        return hashString.toString();
+    }
+
+    
+
+}

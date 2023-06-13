@@ -1,0 +1,30 @@
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/xsd/maven-4.0.0.xsd">
+         
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>com.efrei.ejlmguard</groupId>
+    <artifactId>EJLMGuard</artifactId>
+    <version>1.0.0</version>
+    
+    <properties>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
+    </properties>
+    
+    <dependencies>
+        <dependency>
+            <groupId>org.iq80.leveldb</groupId>
+            <artifactId>leveldb</artifactId>
+            <version>0.12</version>
+        </dependency>
+        <!-- Add your other dependencies here -->
+    </dependencies>
+    
+    <build>
+        <plugins>
+            <!-- Add any build plugins you may need -->
+        </plugins>
+    </build>
+    
+</project>
