@@ -9,57 +9,66 @@ import java.io.IOException;
 public class DatabaseHandler {
 
     private static final String DB_PATH = "vpsdataset.db";
+    private DB database;
 
-    public static void fillDatabase() {
+    public DatabaseHandler() {
         try {
-            DB database = openDatabase(DB_PATH);
-            putHash(database, "hash1", "Description 1");
-            putHash(database, "hash2", "Description 2");
-            putHash(database, "hash3", "Description 3");
-            database.close();
+            database = openDatabase(DB_PATH);
         } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
-    public static String findDescription(String hash) {
-        try {
-            DB database = openDatabase(DB_PATH);
-            String description = getHash(database, hash);
-            database.close();
-            return description;
-        } catch (IOException e) {
-            e.printStackTrace();
-        }
-        return null;
+    public void fillDatabase() {
+        // I write 3 generic MD5 hash and random viruses names
+        putHash("f0af8ccf306c99b50f4873c327a27ff0", "NotAVirus");
+        putHash("17e3d333f69c55ed26e60cd661e5dd76", "NotAVirus");
+        putHash("258547e4dc8e7bf245533991345e6eb7", "NotAVirus");
     }
 
-    private static DB openDatabase(String path) throws IOException {
+    public boolean isHashInDatabase(String hash){
+        return getHash(hash) != null;
+    }
+
+    public String findDescription(String hash) {
+        String description = getHash(hash);
+        return description;
+    }
+
+    private DB openDatabase(String path) throws IOException {
         Options options = new Options();
         options.createIfMissing(true);
         return Iq80DBFactory.factory.open(new File(path), options);
     }
 
-    private static void putHash(DB database, String hash, String description) {
+    private void putHash(String hash, String description) {
         database.put(bytes(hash), bytes(description));
     }
 
-    private static String getHash(DB database, String hash) {
+    private String getHash(String hash) {
         byte[] valueBytes = database.get(bytes(hash));
         return valueBytes != null ? asString(valueBytes) : null;
     }
 
-    private static byte[] bytes(String str) {
+    private byte[] bytes(String str) {
         return str.getBytes();
     }
 
-    private static String asString(byte[] bytes) {
+    private String asString(byte[] bytes) {
         return new String(bytes);
     }
 
-    public static void main(String[] args) {
-        fillDatabase();
-        String description = findDescription("hash2");
-        System.out.println("Description for hash2: " + description);
+    public void close() throws IOException {
+        database.close();
+    }
+
+    public void listHashes() throws IOException{
+        try (DBIterator iterator = database.iterator()) {
+            for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+                String key = asString(iterator.peekNext().getKey());
+                String value = asString(iterator.peekNext().getValue());
+                System.out.println(key + " = " + value);
+            }
+        }
     }
 }
