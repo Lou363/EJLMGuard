@@ -19,6 +19,12 @@
     <jacoco.unit-tests.limit.branch-ratio>0%</jacoco.unit-tests.limit.branch-ratio>
     <jacoco.unit-tests.limit.class-complexity>20</jacoco.unit-tests.limit.class-complexity>
     <jacoco.unit-tests.limit.method-complexity>5</jacoco.unit-tests.limit.method-complexity>
+
+
+    <javafx.version>18</javafx.version>
+    <javafx.maven.plugin.version>0.0.8</javafx.maven.plugin.version>
+
+
   </properties>
   <dependencies>
 
@@ -45,9 +51,43 @@
       <version>${junit.version}</version>
       <scope>test</scope>
     </dependency>
+
+
+     <dependency>
+    <groupId>org.openjfx</groupId>
+    <artifactId>javafx-fxml</artifactId>
+    <version>11.0.1</version>
+    </dependency>
+
+    <dependency>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-controls</artifactId>
+        <version>${javafx.version}</version>
+      </dependency>
+  
+    <dependency>
+      <groupId>org.scalafx</groupId>
+      <artifactId>scalafxml-core-sfx8_2.12</artifactId>
+      <version>0.5</version>
+    </dependency>
+
+
   </dependencies>
   <build>
     <plugins>
+
+
+      <plugin>
+        <groupId>org.openjfx</groupId>
+        <artifactId>javafx-maven-plugin</artifactId>
+        <version>${javafx.maven.plugin.version}</version>
+        <configuration>
+            <mainClass>com.efrei.ejlmguard</mainClass>
+        </configuration>
+      </plugin>
+    
+
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-enforcer-plugin</artifactId>
