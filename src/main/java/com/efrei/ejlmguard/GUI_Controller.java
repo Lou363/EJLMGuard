@@ -90,5 +90,10 @@ public class GUI_Controller {
     }
   }
 
+    @FXML
+    void updateBDD(ActionEvent event) {
+
+    }
+
 }
 
