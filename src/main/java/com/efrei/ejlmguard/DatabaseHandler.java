@@ -142,7 +142,6 @@ public class DatabaseHandler {
                     lineCount++;
                 }
             }
-            System.out.println("Line count: " + lineCount + " lines");
 
             // Read file in stream mode
             WriteBatch batch = database.createWriteBatch();

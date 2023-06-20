@@ -121,7 +121,6 @@ public class UpdateGUI extends JFrame{
                     progress = (double) bytesRead / contentLength;
                     int progressPercentage = (int) (progress * 100);
                     SwingUtilities.invokeLater(() -> updateProgress(progressPercentage));
-                    System.out.println("[UPDATER] Downloaded " + progressPercentage + "% of dataset.");
                 }
             }
 
