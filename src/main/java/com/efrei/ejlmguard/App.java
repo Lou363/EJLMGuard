@@ -1,10 +1,18 @@
 package com.efrei.ejlmguard;
 
+import java.awt.event.WindowAdapter;
+import java.awt.event.WindowEvent;
 import java.io.IOException;
 
 import java.nio.file.Files;
-import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.concurrent.CountDownLatch;
+
+import javax.swing.SwingUtilities;
+
+import com.efrei.ejlmguard.GUI.DatabasePusher;
+import com.efrei.ejlmguard.GUI.UpdateGUI;
+
 
 public class App {
     private static DatabaseHandler databaseHandler;
@@ -13,22 +21,66 @@ public class App {
         configurationHandler = new ConfigurationHandler();
 
         databaseHandler = new DatabaseHandler();
-
+        /* #######################################
+         * #            VPS UPDATE CHECKING      #
+         * #######################################
+         */
         if (Files.exists(Paths.get("dataset.json"))) {
-            System.out.println("Applied update successfully.");
-            databaseHandler.importFromJSON("dataset.json");
-            // I delete the file
-            Files.delete(Paths.get("dataset.json"));
+            final CountDownLatch latch = new CountDownLatch(1); // Create a latch to synchronize threads
+
+            SwingUtilities.invokeLater(() -> {
+                DatabasePusher db = new DatabasePusher();
+
+                // Add a window listener to the DatabasePusher window
+                db.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        latch.countDown(); // Signal that the window is closed
+                    }
+                });
+
+                System.out.println("We want to have a dataset.");
+            });
+
+            try {
+                latch.await(); // Wait until the latch is counted down
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        // If not we check for updates
         } else {
-            UpdateGUI updater = new UpdateGUI(true);
+            final CountDownLatch latch = new CountDownLatch(1); // Create a latch to synchronize threads
+
+            SwingUtilities.invokeLater(() -> {
+                UpdateGUI updater = new UpdateGUI(true);
+
+                // Add a window listener to the UpdateGUI window
+                updater.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        latch.countDown(); // Signal that the window is closed
+                    }
+                });
+            });
+
+            try {
+                latch.await(); // Wait until the latch is counted down
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
         }
-        
-        // I print the database content
-        System.out.println("Database content:");
-        //databaseHandler.listHashes();
+
+        /* #######################################
+         * #      PROTECTION INITIALIZATION      #
+         * #######################################
+         */
+        // GUI_Main.main(args);
 
 
-        // I close the database
+        /* ######################################
+         * #         END OF THE PROGRAM         #
+         * ######################################
+         */
         databaseHandler.close();
     }
 
@@ -38,10 +90,6 @@ public class App {
 
     public static ConfigurationHandler getConfigurationHandler() {
         return configurationHandler;
-    }
-
-    public static void setDatabaseHandler(DatabaseHandler databaseHandler) {
-        App.databaseHandler = databaseHandler;
     }
 
     public static void restartProgram() {

@@ -1,19 +1,17 @@
-package com.efrei.ejlmguard;
+package com.efrei.ejlmguard.GUI;
 
 import javax.swing.*;
+
+import com.efrei.ejlmguard.App;
+import com.efrei.ejlmguard.Version;
+
 import java.awt.*;
 
-import org.apache.commons.io.FileUtils;
-
-import javax.swing.*;
-import java.awt.*;
 import java.io.*;
 import java.net.URI;
 import java.net.http.HttpClient;
 import java.net.http.HttpRequest;
 import java.net.http.HttpResponse;
-import java.nio.file.Files;
-import java.nio.file.Path;
 
 public class UpdateGUI extends JFrame{
 

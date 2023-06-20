@@ -1,4 +1,4 @@
-package com.efrei.ejlmguard;
+package com.efrei.ejlmguard.GUI;
 
 
 import java.io.IOException;

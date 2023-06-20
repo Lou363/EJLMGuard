@@ -3,7 +3,10 @@ package com.efrei.ejlmguard;
 import org.iq80.leveldb.*;
 import org.iq80.leveldb.impl.Iq80DBFactory;
 
+import com.efrei.ejlmguard.GUI.DatabasePusher;
 import com.google.gson.Gson;
+import com.google.gson.stream.JsonReader;
+
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
@@ -67,7 +70,6 @@ public class DatabaseHandler {
     }
 
     public void close() throws IOException {
-        System.out.println("Closing database.");
         database.close();
     }
 
@@ -120,37 +122,49 @@ public class DatabaseHandler {
 
     public void importFromJSON(String jsonFilePath) throws IOException {
         Gson gson = new Gson();
+        JsonReader jsonReader = null;
 
         try {
-            StringBuilder jsonData = new StringBuilder();
-            try (BufferedReader reader = new BufferedReader(new FileReader(jsonFilePath))) {
-                String line;
-                while ((line = reader.readLine()) != null) {
-                    jsonData.append(line);
-                }
-            }
-
-            HashMap<String, String> data = gson.fromJson(jsonData.toString(), HashMap.class);
+            jsonReader = new JsonReader(new FileReader(jsonFilePath));
 
             WriteBatch batch = database.createWriteBatch();
-            try {
-                for (Map.Entry<String, String> entry : data.entrySet()) {
-                    String key = entry.getKey();
-                    String value = entry.getValue();
+            int batchSize = 0;
 
-                    byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
-                    byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
+            jsonReader.beginObject();
+            while (jsonReader.hasNext()) {
+                String key = jsonReader.nextName();
+                String value = jsonReader.nextString();
 
-                    batch.put(keyBytes, valueBytes);
+                byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
+                byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
+
+                batch.put(keyBytes, valueBytes);
+                batchSize++;
+
+                if (batchSize >= 1000) {
+                    database.write(batch);
+                    batch.close();
+                    batch = database.createWriteBatch();
+                    batchSize = 0;
                 }
+            }
+            jsonReader.endObject();
 
+            // Write the remaining batch if any
+            if (batchSize > 0) {
                 database.write(batch);
-            } finally {
                 batch.close();
             }
 
             System.out.println("Import completed successfully.");
         } finally {
+            if (jsonReader != null) {
+                try {
+                    jsonReader.close();
+                } catch (IOException e) {
+                    // Handle the IOException if necessary.
+                }
+            }
             if (database != null) {
                 try {
                     database.close();
@@ -161,5 +175,4 @@ public class DatabaseHandler {
             }
         }
     }
-
 }
