@@ -51,14 +51,13 @@ public class GUI_Controller {
     }
   }
 
-  public void getFile(String Path){
+  public File getFile(String Path){
     try {
      
       String adapted = Path.replaceAll("\\\\",  "\\\\\\\\");
       String[] name = adapted.split("\\\\");
       File f = new File(adapted);
       FileInputStream fis = new FileInputStream(f);
-      System.out.println(Path);
 
       
       //JOptionPane.showMessageDialog(null, "Analyse de " + name[name.length - 1] +  " en cours");
@@ -67,6 +66,8 @@ public class GUI_Controller {
         frame.setLocationRelativeTo(null);
         frame.setSize(350, 150);
         frame.setVisible(true);
+
+        return f;
       /*File f = new File(adapted);
       FileWriter fw = new FileWriter(f, true); //filewriiter allows to write to the directory
       BufferedWriter bw = new BufferedWriter(fw); //allow to buffer the information from the fw
@@ -77,7 +78,9 @@ public class GUI_Controller {
     } catch (FileNotFoundException e) {
     // TODO Auto-generated catch block
       JOptionPane.showMessageDialog(null, "File not found");
+      return null;
     }
+    
   }
 
   @FXML
@@ -85,15 +88,13 @@ public class GUI_Controller {
     if(placeholder.getText() == "" ){
       JOptionPane.showMessageDialog(null, "Text field empty");
     }else{
-      
-      getFile(placeholder.getText());
+      File f = getFile(placeholder.getText());
+      SignatureUtilities si = new SignatureUtilities(f);
+      System.out.println(si.getMD5() + "\n" + si.getSha1() + "\n" + si.getSha256());
     }
   }
 
-    @FXML
-    void updateBDD(ActionEvent event) {
-
-    }
+  
 
 }
 
