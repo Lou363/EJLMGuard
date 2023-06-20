@@ -21,6 +21,7 @@ public class DatabaseHandler {
     public DatabaseHandler() {
         try {
             database = openDatabase(DB_PATH);
+            fillDatabase();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -33,8 +34,8 @@ public class DatabaseHandler {
         putHash("258547e4dc8e7bf245533991345e6eb7", "NotAVirus");
     }
 
-    public boolean isHashInDatabase(String hash){
-        return getHash(hash) != null;
+    public boolean isHashInDatabase(String md5Hash){
+        return getHash(md5Hash) != null;
     }
 
     public String findDescription(String hash) {
@@ -66,6 +67,7 @@ public class DatabaseHandler {
     }
 
     public void close() throws IOException {
+        System.out.println("Closing database.");
         database.close();
     }
 
@@ -135,13 +137,13 @@ public class DatabaseHandler {
                 for (Map.Entry<String, String> entry : data.entrySet()) {
                     String key = entry.getKey();
                     String value = entry.getValue();
-                    
+
                     byte[] keyBytes = key.getBytes(StandardCharsets.UTF_8);
                     byte[] valueBytes = value.getBytes(StandardCharsets.UTF_8);
-                    
+
                     batch.put(keyBytes, valueBytes);
                 }
-                
+
                 database.write(batch);
             } finally {
                 batch.close();
@@ -150,8 +152,14 @@ public class DatabaseHandler {
             System.out.println("Import completed successfully.");
         } finally {
             if (database != null) {
-                database.close();
+                try {
+                    database.close();
+                } catch (NullPointerException e) {
+                    // Handle the NullPointerException, or log an error message
+                    // if necessary.
+                }
             }
         }
     }
+
 }

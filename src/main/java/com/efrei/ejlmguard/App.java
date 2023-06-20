@@ -2,24 +2,27 @@ package com.efrei.ejlmguard;
 
 import java.io.IOException;
 
+import java.nio.file.Files;
+import java.nio.file.Path;
+import java.nio.file.Paths;
+
 public class App {
     private static DatabaseHandler databaseHandler;
     private static ConfigurationHandler configurationHandler;
     public static void main(String[] args) throws IOException {
-        // I begin by initialising the configuration
         configurationHandler = new ConfigurationHandler();
-        // I begin by initialising the database
+
         databaseHandler = new DatabaseHandler();
+
+        if (Files.exists(Paths.get("dataset.json"))) {
+            System.out.println("Applied update successfully.");
+            databaseHandler.importFromJSON("dataset.json");
+            // I delete the file
+            Files.delete(Paths.get("dataset.json"));
+        } else {
+            UpdateGUI updater = new UpdateGUI(true);
+        }
         
-        // I update the VPS
-        UpdateHandler updateHandler = new UpdateHandler();
-        System.out.println("Update available: " + updateHandler.isUpdateAvailable());
-        if(updateHandler.isUpdateAvailable())
-            updateHandler.updateVPS();
-
-        // I fill the database with some generic hashes
-        // databaseHandler.importFromJSON("export.json");
-
         // I print the database content
         System.out.println("Database content:");
         //databaseHandler.listHashes();
@@ -35,5 +38,35 @@ public class App {
 
     public static ConfigurationHandler getConfigurationHandler() {
         return configurationHandler;
+    }
+
+    public static void setDatabaseHandler(DatabaseHandler databaseHandler) {
+        App.databaseHandler = databaseHandler;
+    }
+
+    public static void restartProgram() {
+        String os = System.getProperty("os.name").toLowerCase();
+
+        try {
+            ProcessBuilder processBuilder;
+            if (os.contains("win")) {
+                // Windows
+                processBuilder = new ProcessBuilder("cmd", "/c", "java -jar program.jar");
+            } else if (os.contains("mac")) {
+                // macOS
+                processBuilder = new ProcessBuilder("java", "-jar", "program.jar");
+            } else {
+                // Linux
+                processBuilder = new ProcessBuilder("sh", "-c", "java -jar program.jar");
+            }
+
+            processBuilder.inheritIO();
+            processBuilder.start();
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
+
+        // Exit the current program
+        System.exit(0);
     }
 }
