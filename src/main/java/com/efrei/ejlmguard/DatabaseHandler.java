@@ -120,15 +120,36 @@ public class DatabaseHandler {
         }
     }
 
-    public void importFromJSON(String jsonFilePath) throws IOException {
+    public void importFromJSON(String jsonFilePath, DatabasePusher dbPusher) throws IOException {
         Gson gson = new Gson();
         JsonReader jsonReader = null;
+        int lineCount = 0;
 
+        dbPusher.switchToWriteMode();
         try {
             jsonReader = new JsonReader(new FileReader(jsonFilePath));
 
+            // Clear the database
+            try (DBIterator iterator = database.iterator()) {
+                for (iterator.seekToFirst(); iterator.hasNext(); iterator.next()) {
+                    database.delete(iterator.peekNext().getKey());
+                }
+            }
+
+            // Count the number of lines in the file
+            try (BufferedReader reader = new BufferedReader(new FileReader(jsonFilePath))) {
+                while (reader.readLine() != null) {
+                    lineCount++;
+                }
+            }
+            System.out.println("Line count: " + lineCount + " lines");
+
+            // Read file in stream mode
             WriteBatch batch = database.createWriteBatch();
             int batchSize = 0;
+            int processedLines = 0;
+            int progressUpdateInterval = 1000;
+            int progress = 0;
 
             jsonReader.beginObject();
             while (jsonReader.hasNext()) {
@@ -140,12 +161,23 @@ public class DatabaseHandler {
 
                 batch.put(keyBytes, valueBytes);
                 batchSize++;
+                processedLines++;
 
-                if (batchSize >= 1000) {
+                if (batchSize >= progressUpdateInterval || processedLines == lineCount) {
                     database.write(batch);
                     batch.close();
-                    batch = database.createWriteBatch();
-                    batchSize = 0;
+
+                    progress = (int) ((float) processedLines / lineCount * 100);
+                    if (progress > 100) {
+                        progress = 100; // Cap the progress at 100%
+                    }
+
+                    dbPusher.updateProgress(progress);
+
+                    if (processedLines != lineCount) {
+                        batch = database.createWriteBatch();
+                        batchSize = 0;
+                    }
                 }
             }
             jsonReader.endObject();

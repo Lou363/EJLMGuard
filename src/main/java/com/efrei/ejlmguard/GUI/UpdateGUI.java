@@ -46,6 +46,7 @@ public class UpdateGUI extends JFrame{
         setVisible(true);
         // I launch the update in a new thread so that the GUI can be updated
         new Thread(() -> {
+            System.out.println("[UPDATER] Checking for updates...");
             checkUpdate();
             if(updateAvailable){
                 updateprogressBarType(false);
@@ -85,14 +86,15 @@ public class UpdateGUI extends JFrame{
 
         // Check if an update is available
         if (currentVersion.compareTo(new Version(latestVersion)) < 0) {
-            System.out.println("An update is available to VPS version " + latestVersion );
+            System.out.println("[UPDATER] Update available. (Current version: " + currentVersion + ", Latest version: " + latestVersion + ")]");
             updateAvailable = true;
         } else {
-            System.out.println("No update available.");
+            System.out.println("[UPDATER] No update available. (Current version: " + currentVersion + ")");
         }
     }
 
     private void updateVPS(){
+        System.out.println("[UPDATE] Begin downloading new dataset...");
         HttpClient client = HttpClient.newHttpClient();
         HttpRequest request = HttpRequest.newBuilder()
                 .uri(URI.create(DATASET_URL))
@@ -119,12 +121,13 @@ public class UpdateGUI extends JFrame{
                     progress = (double) bytesRead / contentLength;
                     int progressPercentage = (int) (progress * 100);
                     SwingUtilities.invokeLater(() -> updateProgress(progressPercentage));
+                    System.out.println("[UPDATER] Downloaded " + progressPercentage + "% of dataset.");
                 }
             }
 
             // Download complete
             SwingUtilities.invokeLater(() -> updateProgress(100));
-            System.out.println("Dataset downloaded successfully.");
+            System.out.println("[UPDATER] Download complete, attempting to restart...");
         } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
@@ -140,9 +143,9 @@ public class UpdateGUI extends JFrame{
             HttpResponse<String> response = client.send(request, HttpResponse.BodyHandlers.ofString());
             return response.body().trim();
         } catch (IOException | InterruptedException e) {
-            System.out.println("Unable to fetch latest version. Check your internet connection.");
+            System.out.println("[UPDATER/ERROR] Unable to fetch latest version. Check your internet connection.");
             if(!launchedInBackground)
-                sendMessage("Unable to fetch latest version. Check your internet connection.", "Error", JOptionPane.ERROR_MESSAGE);
+                sendMessage("[UPDATER/ERROR] Unable to fetch latest version. Check your internet connection.", "Error", JOptionPane.ERROR_MESSAGE);
             e.printStackTrace();
         }
         return null;

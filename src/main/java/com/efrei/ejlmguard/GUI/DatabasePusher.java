@@ -14,7 +14,7 @@ public class DatabasePusher extends JFrame {
     private JProgressBar progressBar;
 
     public DatabasePusher() {
-        super("Update");
+        super("Pushing updates");
         setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         // Set the look to the OS look
         try {
@@ -36,7 +36,7 @@ public class DatabasePusher extends JFrame {
         // I launch the update in a new thread so that the GUI can be updated
         Thread thread = new Thread(() -> {
             try {
-                App.getDatabaseHandler().importFromJSON("dataset.json");
+                App.getDatabaseHandler().importFromJSON("dataset.json", this);
                 // I delete the file
                 Files.delete(Paths.get("dataset.json"));
                 processFinished();
@@ -49,10 +49,15 @@ public class DatabasePusher extends JFrame {
     }
 
     private void processFinished() {
-        System.out.println("Update successfully pushed to database.");
+        System.out.println("[DB PUSHER] Successfully pushed updates to database.");
         dispose();
     }
 
+    public void switchToWriteMode(){
+        SwingUtilities.invokeLater(() -> progressBar.setIndeterminate(false));
+        SwingUtilities.invokeLater(() -> progressBar.setValue(0));
+        SwingUtilities.invokeLater(() -> label.setText("Writing to local database..."));
+    }
     public void updateProgress(int progress) {
         SwingUtilities.invokeLater(() -> progressBar.setValue(progress));
     }

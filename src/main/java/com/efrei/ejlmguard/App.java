@@ -39,7 +39,7 @@ public class App {
                     }
                 });
 
-                System.out.println("We want to have a dataset.");
+                System.out.println("[General] dataset.json exists, starting update...");
             });
 
             try {
