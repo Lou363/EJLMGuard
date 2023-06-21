@@ -29,7 +29,7 @@ public class GUI_Main extends Application {
         //root.getChildren().add(btn);
                     
 
-        Parent root = FXMLLoader.load(getClass().getResource("/com/efrei/ejlmguard/GUI_Design.fxml"));
+        Parent root = FXMLLoader.load(getClass().getResource("/com/efrei/ejlmguard/GUI/GUI_Design.fxml"));
         Scene scene = new Scene(root);
         primaryStage.setTitle("Hello World!");
                 primaryStage.setScene(scene);
