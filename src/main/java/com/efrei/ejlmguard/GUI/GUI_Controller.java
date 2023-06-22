@@ -1,5 +1,6 @@
 package com.efrei.ejlmguard.GUI;
 
+import com.efrei.ejlmguard.*;
 
 import java.io.BufferedWriter;
 import java.io.File;
