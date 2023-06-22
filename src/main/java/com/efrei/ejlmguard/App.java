@@ -23,6 +23,13 @@ public class App {
         configurationHandler = new ConfigurationHandler();
 
         databaseHandler = new DatabaseHandler();
+        /* ######################################
+         * #             CAPTIVE UNLOCKING      #
+         * ######################################
+         */
+
+
+        
         /* #######################################
          * #            VPS UPDATE CHECKING      #
          * #######################################
@@ -76,7 +83,7 @@ public class App {
          * #      PROTECTION INITIALIZATION      #
          * #######################################
          */
-        // GUI_Main.main(args);
+        GUI_Main.main(args);
 
 
         /* ######################################
