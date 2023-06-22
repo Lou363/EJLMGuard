@@ -11,6 +11,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
 
 import com.efrei.ejlmguard.GUI.DatabasePusher;
+import com.efrei.ejlmguard.GUI.GUI_Main;
 import com.efrei.ejlmguard.GUI.UpdateGUI;
 
 
@@ -74,7 +75,7 @@ public class App {
          * #      PROTECTION INITIALIZATION      #
          * #######################################
          */
-        // GUI_Main.main(args);
+        GUI_Main.main(args);
 
 
         /* ######################################
