@@ -12,6 +12,7 @@ import java.util.concurrent.CountDownLatch;
 import javax.swing.SwingUtilities;
 
 import com.efrei.ejlmguard.GUI.DatabasePusher;
+import com.efrei.ejlmguard.GUI.GUI_Main;
 import com.efrei.ejlmguard.GUI.UpdateGUI;
 
 
@@ -76,24 +77,6 @@ public class App {
          * #######################################
          */
         // GUI_Main.main(args);
-        WebAnalysis webAnalysis = new WebAnalysis("D:\\Users\\louis\\Downloads\\qbittorrent_4.5.4_x64_setup.exe");
-        try {
-            webAnalysis.submitFileForScan();
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        // Sleep for 10 seconds to let the scan finish
-        try {
-            Thread.sleep(10000);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-        try {
-            webAnalysis.retrieveScanResult();
-        } catch (InterruptedException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
 
 
         /* ######################################

@@ -20,9 +20,9 @@
    <center>
       <SplitPane dividerPositions="0.4865010799136069" prefHeight="295.0" prefWidth="620.0" BorderPane.alignment="CENTER">
         <items>
-          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
+          <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="257.0" prefWidth="308.0">
                <children>
-                  <Label layoutX="68.0" layoutY="14.0" text="Analyse VirusTotal">
+                  <Label layoutX="68.0" layoutY="14.0" text="Analyse de fichiers">
                      <font>
                         <Font size="20.0" />
                      </font>
@@ -37,12 +37,12 @@
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
                <children>
-                  <Label layoutX="107.0" layoutY="14.0" text="Paramètres">
+                  <Label layoutX="122.0" layoutY="14.0" text="Résultat">
                      <font>
                         <Font size="20.0" />
                      </font>
                   </Label>
-                  <ScrollPane fx:id="Result" prefHeight="259.0" prefWidth="316.0" />
+                  <ScrollPane fx:id="Result" layoutY="44.0" prefHeight="215.0" prefWidth="316.0" />
                </children>
             </AnchorPane>
         </items>

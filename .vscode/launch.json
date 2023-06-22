@@ -6,6 +6,15 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GUI_Main",
+            "request": "launch",
+            "mainClass": "com.efrei.ejlmguard.GUI.GUI_Main",
+            "projectName": "ejlm",
+            "vmArgs": "--module-path ${fileWorkspaceFolder}\\src\\main\\java\\com\\efrei\\ejlmguard\\GUI\\javafx-sdk-19\\lib --add-modules=javafx.controls,javafx.fxml"
+
+        },
+        {
+            "type": "java",
             "name": "Current File",
             "request": "launch",
             "mainClass": "${file}"
@@ -21,10 +30,9 @@
             "type": "java",
             "name": "GUI_Main",
             "request": "launch",
-            "mainClass": "com.efrei.ejlmguard.GUI_Main",
+            "mainClass": "com.efrei.ejlmguard.GUI.GUI_Main",
             "projectName": "ejlm",
-            "vmArgs": "--module-path ${fileWorkspaceFolder}\\src\\main\\java\\com\\efrei\\ejlmguard\\javafx-sdk-19\\lib --add-modules=javafx.controls,javafx.fxml"
-
+            "vmArgs": "--module-path ${fileWorkspaceFolder}\\src\\main\\java\\com\\efrei\\ejlmguard\\GUI\\javafx-sdk-19\\lib --add-modules=javafx.controls,javafx.fxml"
         }
     ]
 }

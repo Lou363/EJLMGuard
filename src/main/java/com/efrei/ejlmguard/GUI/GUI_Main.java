@@ -34,6 +34,7 @@ public class GUI_Main extends Application {
         primaryStage.setTitle("Hello World!");
                 primaryStage.setScene(scene);
                 primaryStage.show();
+                
        
     }
  

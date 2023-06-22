@@ -14,23 +14,37 @@ import javax.swing.JFrame;
 import javax.swing.JOptionPane;
 import javax.swing.filechooser.FileSystemView;
 
+import com.efrei.ejlmguard.SignatureUtilities;
+import com.efrei.ejlmguard.DatabaseHandler;
+import com.efrei.ejlmguard.App;
+
+
+
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
 import javafx.scene.control.Label;
 import javafx.scene.control.ProgressBar;
+import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 
 public class GUI_Controller {
 
-  @FXML
-  private Button Analyser;
+    DatabaseHandler db = App.getDatabaseHandler();
 
-  @FXML
-  private Button parcourir;
+   @FXML
+    private Button Analyser;
 
-  @FXML
-  private TextField placeholder;
+    @FXML
+    private ScrollPane Result;
+
+    @FXML
+    private Button parcourir;
+
+    @FXML
+    private TextField placeholder;
+
+    Label test = new Label(null);
 
   @FXML
   void findFile(ActionEvent event) {
@@ -67,7 +81,14 @@ public class GUI_Controller {
         frame.setLocationRelativeTo(null);
         frame.setSize(350, 150);
         frame.setVisible(true);
-
+        try {
+          Thread.sleep(1500);
+          frame.setVisible(false);
+        } catch (InterruptedException e) {
+          // TODO Auto-generated catch block
+          e.printStackTrace();
+        }
+        
         return f;
       /*File f = new File(adapted);
       FileWriter fw = new FileWriter(f, true); //filewriiter allows to write to the directory
@@ -92,6 +113,26 @@ public class GUI_Controller {
       File f = getFile(placeholder.getText());
       SignatureUtilities si = new SignatureUtilities(f);
       System.out.println(si.getMD5() + "\n" + si.getSha1() + "\n" + si.getSha256());
+
+      if(db.isHashInDatabase(si.getMD5())){
+
+        test.setText("\n\n  " + db.findDescription(si.getMD5()));
+
+        Result.setContent(test);
+      }else{
+        System.out.println("nope");
+        test.setText("\n\n  Aucune menace n'a été detectée");
+        
+
+                
+        //test.setText(",opiajdf`\n\nefzdn\nfzed\nzfd\nvec\n\n\nfdzsaiojuhycghdn,koskixuchyghjbzn,dklpxqoiuhcjndz;lxpsiuihy\n\ngdzyuaiszoj_dygucbn,dskxqoduygfbzchjnk,opdsç_yghdbz en,;ldxpoij\n\n\nzgvubcnjx,zsikeuzcugf\n\n\nvzgebhjskizduchy");    
+
+        Result.setContent(test);
+        //System.out.println(db.findDescription(si.getMD5()));
+        //System.out.println(db.findDescription(si.getSha1()));
+        //System.out.println(db.findDescription(si.getSha256()));
+      }
+
     }
   }
 
