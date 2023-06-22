@@ -22,6 +22,9 @@ public class App {
     public static void main(String[] args) throws IOException {
         configurationHandler = new ConfigurationHandler();
 
+
+        // databaseHandler = new DatabaseHandler();
+        
         databaseHandler = new DatabaseHandler();
         /* ######################################
          * #             CAPTIVE UNLOCKING      #
@@ -29,7 +32,7 @@ public class App {
          */
 
 
-        
+
         /* #######################################
          * #            VPS UPDATE CHECKING      #
          * #######################################
