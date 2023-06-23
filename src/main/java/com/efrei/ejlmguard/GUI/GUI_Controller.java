@@ -1,13 +1,7 @@
 package com.efrei.ejlmguard.GUI;
 
 
-import java.io.BufferedWriter;
 import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.FileWriter;
-import java.io.IOException;
-
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -18,12 +12,11 @@ import com.efrei.ejlmguard.DatabaseHandler;
 import com.efrei.ejlmguard.App;
 
 
-
 import javafx.event.ActionEvent;
 import javafx.fxml.FXML;
 import javafx.scene.control.Button;
+import javafx.scene.control.CheckBox;
 import javafx.scene.control.Label;
-import javafx.scene.control.ProgressBar;
 import javafx.scene.control.ScrollPane;
 import javafx.scene.control.TextField;
 
@@ -43,7 +36,21 @@ public class GUI_Controller {
     @FXML
     private TextField placeholder;
 
+      @FXML
+    private CheckBox toggleWatcher;
+
+    @FXML
+    void activateWatch(ActionEvent event) {
+        if (toggleWatcher.isSelected()){
+          toggleWatcher.setText("Opérationnelle");
+        }
+        else{
+          toggleWatcher.setText("Désactivée");
+        }
+    }
+
     Label test = new Label(null);
+
 
   @FXML
   void findFile(ActionEvent event) {
@@ -66,13 +73,13 @@ public class GUI_Controller {
   }
 
   public File getFile(String Path){
-    try {
+  
      
       String adapted = Path.replaceAll("\\\\",  "\\\\\\\\");
       String[] name = adapted.split("\\\\");
       File f = new File(adapted);
-      FileInputStream fis = new FileInputStream(f);
-
+      //FileInputStream fis = new FileInputStream(f);
+      if(f.exists()){
       
       //JOptionPane.showMessageDialog(null, "Analyse de " + name[name.length - 1] +  " en cours");
        JFrame frame = new GUI_ecranChargement(name[name.length - 1]);
@@ -97,11 +104,12 @@ public class GUI_Controller {
       bw.write("z\n");
       bw.write("------------------------------------------------\n");
       bw.close();*/
-    } catch (FileNotFoundException e) {
-    // TODO Auto-generated catch block
-      JOptionPane.showMessageDialog(null, "File not found");
-      return null;
+      }else {
+        throw new IllegalArgumentException("File does not exist");
+        
     }
+
+
     
   }
 
@@ -110,29 +118,34 @@ public class GUI_Controller {
     if(placeholder.getText() == "" ){
       JOptionPane.showMessageDialog(null, "Text field empty");
     }else{
-      File f = getFile(placeholder.getText());
-      SignatureUtilities si = new SignatureUtilities(f);
-      System.out.println(si.getMD5() + "\n" + si.getSha1() + "\n" + si.getSha256());
 
-      if(db.isHashInDatabase(si.getMD5())){
+      try{
+        File f = getFile(placeholder.getText());
+        SignatureUtilities si = new SignatureUtilities(f);
+        System.out.println(si.getMD5() + "\n" + si.getSha1() + "\n" + si.getSha256());
 
-        test.setText("\n\n  " + db.findDescription(si.getMD5()));
+        if(db.isHashInDatabase(si.getMD5())){
 
-        Result.setContent(test);
-      }else{
-        System.out.println("nope");
-        test.setText("\n\n  Aucune menace n'a été detectée");
-        
+          test.setText("\n\n  " + db.findDescription(si.getMD5()));
 
-                
-        //test.setText(",opiajdf`\n\nefzdn\nfzed\nzfd\nvec\n\n\nfdzsaiojuhycghdn,koskixuchyghjbzn,dklpxqoiuhcjndz;lxpsiuihy\n\ngdzyuaiszoj_dygucbn,dskxqoduygfbzchjnk,opdsç_yghdbz en,;ldxpoij\n\n\nzgvubcnjx,zsikeuzcugf\n\n\nvzgebhjskizduchy");    
+          Result.setContent(test);
+        }else{
+          System.out.println("nope");
+          test.setText("\n\n  Aucune menace n'a été detectée");
+          
 
-        Result.setContent(test);
-        //System.out.println(db.findDescription(si.getMD5()));
-        //System.out.println(db.findDescription(si.getSha1()));
-        //System.out.println(db.findDescription(si.getSha256()));
+                  
+          //test.setText(",opiajdf`\n\nefzdn\nfzed\nzfd\nvec\n\n\nfdzsaiojuhycghdn,koskixuchyghjbzn,dklpxqoiuhcjndz;lxpsiuihy\n\ngdzyuaiszoj_dygucbn,dskxqoduygfbzchjnk,opdsç_yghdbz en,;ldxpoij\n\n\nzgvubcnjx,zsikeuzcugf\n\n\nvzgebhjskizduchy");    
+
+          Result.setContent(test);
+          //System.out.println(db.findDescription(si.getMD5()));
+          //System.out.println(db.findDescription(si.getSha1()));
+          //System.out.println(db.findDescription(si.getSha256()));
+        }
+      }catch(IllegalArgumentException e){
+                JOptionPane.showMessageDialog(null, e);
+
       }
-
     }
   }
 
