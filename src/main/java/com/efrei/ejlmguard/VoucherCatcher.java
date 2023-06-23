@@ -1,18 +1,5 @@
 package com.efrei.ejlmguard;
 
-import java.awt.event.WindowAdapter;
-import java.awt.event.WindowEvent;
-import java.nio.file.Files;
-import java.nio.file.Paths;
-import java.util.concurrent.CountDownLatch;
-
-import javax.print.DocFlavor.STRING;
-import javax.swing.SwingUtilities;
-
-import com.efrei.ejlmguard.GUI.DatabasePusher;
-import com.efrei.ejlmguard.GUI.GUI_Main;
-import com.efrei.ejlmguard.GUI.UpdateGUI;
-
 import java.io.*;
 import java.net.*;
 
@@ -21,26 +8,61 @@ public class VoucherCatcher {
     private String fwAdress = "192.168.1.254";
     private String voucher = "";
 
-    //TODO: add button to enter the adress of the captive portal
-        
+    private void scriptPinger(String voucher, int port) throws IOException {
     // Create a socket to connect to the server on port 666
     Socket clientSocket = new Socket(fwAdress, port);
 
     // Send data
-    String data = "Test de données";
+    String data = "EJLMGUARDauth";
     OutputStream out = clientSocket.getOutputStream();
     out.write(data.getBytes());
 
     // Receive server response
     InputStream in = clientSocket.getInputStream();
     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-    String read = reader.readLine();
-    System.out.println(read);
+    voucher = reader.readLine();
+    System.out.println(voucher);
 
     // Close the socket
     clientSocket.close();
+    }
 
+    private void voucherSender(String voucher) throws IOException {
+        // Set the voucher code
+            String voucherCode = "YOUR_VOUCHER_CODE";
+            
+            // Set the Captive Portal URL
+            String captivePortalURL = "http://your-pfsense-captive-portal-url";
+            
+            // Create the URL with the voucher code as a query parameter
+            String urlString = captivePortalURL + "/?voucher=" + URLEncoder.encode(voucherCode, "UTF-8");
 
+            // Create a URL object
+            URL url = new URL(urlString);
+
+            // Open a connection to the URL
+            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+
+            // Set the request method to GET
+            connection.setRequestMethod("GET");
+
+            // Get the response code
+            int responseCode = connection.getResponseCode();
+
+            // Read the response
+            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+            String line;
+            StringBuilder response = new StringBuilder();
+
+            while ((line = reader.readLine()) != null) {
+                response.append(line);
+            }
+
+            // Close the reader and connection
+            reader.close();
+            connection.disconnect();
+    }
+    
     //getter and setter for port
     public int getPort() {
         return port;
