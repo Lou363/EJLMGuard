@@ -1,5 +1,6 @@
 package com.efrei.ejlmguard.GUI;
 
+import com.efrei.ejlmguard.*;
 
 import java.io.File;
 import javax.swing.JFileChooser;
@@ -87,7 +88,6 @@ public class GUI_Controller {
         frame.setLocationRelativeTo(null);
         frame.setSize(350, 150);
         frame.setVisible(true);
-
         try {
           Thread.sleep(1500);
           frame.setVisible(false);

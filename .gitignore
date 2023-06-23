@@ -1,0 +1,38 @@
+# Ignore compiled binary files
+*.class
+*.json
+
+# Ignore dependencies
+/node_modules
+/bower_components
+
+# Ignore log files and backups
+*.log
+*.bak
+*.swp
+
+# Ignore OS-specific files
+.DS_Store
+Thumbs.db
+
+# Ignore editor-specific files
+.idea/
+.vscode/
+
+# Ignore temporary files
+*.tmp
+*.temp
+
+# Ignore build output
+/build
+/dist
+
+# Ignore configuration files with sensitive information
+config.json
+
+# Ignore generated documentation
+/docs
+
+# Ignore specific file or directory
+# /path/to/file.ext
+ /vpdataset.db/
