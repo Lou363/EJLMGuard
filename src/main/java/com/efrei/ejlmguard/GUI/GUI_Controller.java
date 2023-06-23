@@ -122,7 +122,7 @@ public class GUI_Controller {
       try{
         File f = getFile(placeholder.getText());
         SignatureUtilities si = new SignatureUtilities(f);
-        System.out.println(si.getMD5() + "\n" + si.getSha1() + "\n" + si.getSha256());
+        //System.out.println(si.getMD5() + "\n" + si.getSha1() + "\n" + si.getSha256());
 
         if(db.isHashInDatabase(si.getMD5())){
 
@@ -130,7 +130,7 @@ public class GUI_Controller {
 
           Result.setContent(test);
         }else{
-          System.out.println("nope");
+          //System.out.println("nope");
           test.setText("\n\n  Aucune menace n'a été detectée");
           
 
