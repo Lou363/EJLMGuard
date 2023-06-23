@@ -7,12 +7,12 @@ import java.nio.file.*;
 public class DownloadWatcher implements Runnable {
 
     private static final String DOWNLOAD_DIR = "/Users/emilia/Downloads";
-    private SignatureUtilities signatureUtilities;
+    //private SignatureUtilities signatureUtilities;
     private DatabaseHandler databaseHandler;
 
     public DownloadWatcher() throws InterruptedException {
 
-        signatureUtilities = new SignatureUtilities();
+        //signatureUtilities = new SignatureUtilities();
         databaseHandler = App.getDatabaseHandler();
 
         try {
