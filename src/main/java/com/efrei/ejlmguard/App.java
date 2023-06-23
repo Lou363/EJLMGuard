@@ -2,19 +2,19 @@ package com.efrei.ejlmguard;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
-import java.io.IOException;
-
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
+import javax.print.DocFlavor.STRING;
 import javax.swing.SwingUtilities;
 
 import com.efrei.ejlmguard.GUI.DatabasePusher;
 import com.efrei.ejlmguard.GUI.GUI_Main;
 import com.efrei.ejlmguard.GUI.UpdateGUI;
 
+import java.io.*;
+import java.net.*;
 
 public class App {
     private static DatabaseHandler databaseHandler;
@@ -31,6 +31,24 @@ public class App {
          * ######################################
          */
 
+         //TODO: add button to enter the adress of the captive portal
+        String fwAdress = "192.168.1.254";
+        // Create a socket to connect to the server on port 666
+        Socket clientSocket = new Socket(fwAdress, 666);
+
+        // Send data
+        String data = "Test de données";
+        OutputStream out = clientSocket.getOutputStream();
+        out.write(data.getBytes());
+
+        // Receive server response
+        InputStream in = clientSocket.getInputStream();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
+        String response = reader.readLine();
+        System.out.println(response);
+
+        // Close the socket
+        clientSocket.close();
 
 
         /* #######################################
