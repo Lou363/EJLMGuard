@@ -27,40 +27,50 @@ public class VoucherCatcher {
     clientSocket.close();
     }
 
-    private void voucherSender(String voucher) throws IOException {
-        // Set the voucher code
-            String voucherCode = "YOUR_VOUCHER_CODE";
+    private void voucherSender(String voucher , String fwAdress) throws IOException {
+        // Set the Captive Portal URL
+        String captivePortalURL = "https://" + fwAdress + ":8002";
             
-            // Set the Captive Portal URL
-            String captivePortalURL = "http://your-pfsense-captive-portal-url";
-            
-            // Create the URL with the voucher code as a query parameter
-            String urlString = captivePortalURL + "/?voucher=" + URLEncoder.encode(voucherCode, "UTF-8");
+        // Create the URL with the voucher code as a query parameter
+        String urlString = captivePortalURL + "/?voucher=" + URLEncoder.encode(voucher, "UTF-8");
 
-            // Create a URL object
-            URL url = new URL(urlString);
+        // Create a URL object
+        URL url = new URL(urlString);
 
-            // Open a connection to the URL
-            HttpURLConnection connection = (HttpURLConnection) url.openConnection();
+        // Open a connection to the URL
+        HttpURLConnection connection = (HttpURLConnection) url.openConnection();
 
-            // Set the request method to GET
-            connection.setRequestMethod("GET");
+        // Set the request method to GET
+        connection.setRequestMethod("GET");
 
-            // Get the response code
-            int responseCode = connection.getResponseCode();
+        // Get the response code
+        int responseCode = connection.getResponseCode();
 
-            // Read the response
-            BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
-            String line;
-            StringBuilder response = new StringBuilder();
+        // Read the response
+        BufferedReader reader = new BufferedReader(new InputStreamReader(connection.getInputStream()));
+        String line;
+        StringBuilder response = new StringBuilder();
 
-            while ((line = reader.readLine()) != null) {
-                response.append(line);
-            }
+        while ((line = reader.readLine()) != null) {
+            response.append(line);
+        }
 
-            // Close the reader and connection
-            reader.close();
-            connection.disconnect();
+        // Close the reader and connection
+        reader.close();
+        connection.disconnect();
+    }
+
+    public Boolean InternetCheck() throws IOException {
+        InetAddress address = InetAddress.getByName("www.google.com");
+        boolean reachable = address.isReachable(10000);
+        if (reachable) {
+            System.out.println("Internet access is available.");
+            return true;
+        } else {
+            System.out.println("Internet access is not available.");
+            return false;
+        }
+        
     }
     
     //getter and setter for port
