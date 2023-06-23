@@ -31,24 +31,7 @@ public class App {
          * ######################################
          */
 
-         //TODO: add button to enter the adress of the captive portal
-        String fwAdress = "192.168.1.254";
-        // Create a socket to connect to the server on port 666
-        Socket clientSocket = new Socket(fwAdress, 666);
-
-        // Send data
-        String data = "Test de données";
-        OutputStream out = clientSocket.getOutputStream();
-        out.write(data.getBytes());
-
-        // Receive server response
-        InputStream in = clientSocket.getInputStream();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-        String response = reader.readLine();
-        System.out.println(response);
-
-        // Close the socket
-        clientSocket.close();
+         
 
 
         /* #######################################
