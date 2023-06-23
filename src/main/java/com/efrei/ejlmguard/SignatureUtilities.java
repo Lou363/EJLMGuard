@@ -7,6 +7,8 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.lang.model.SourceVersion;
+
 public class SignatureUtilities {
 
     private String md5;
@@ -21,13 +23,18 @@ public class SignatureUtilities {
             throw new IllegalArgumentException("File does not exist");
         }
         try {
+            System.out.println("test1");
             md5 = calculateHash("MD5");
+            System.out.println("test2");
             sha1 = calculateHash("SHA-1");
             sha256 = calculateHash("SHA-256");
         } catch (NoSuchAlgorithmException | IOException e) {
             e.printStackTrace();
         }
 
+    }
+
+    public SignatureUtilities() {
     }
 
     private String calculateHash(String algorithm) throws NoSuchAlgorithmException, IOException {

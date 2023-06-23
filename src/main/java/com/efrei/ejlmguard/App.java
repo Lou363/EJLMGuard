@@ -19,13 +19,15 @@ import com.efrei.ejlmguard.GUI.UpdateGUI;
 public class App {
     private static DatabaseHandler databaseHandler;
     private static ConfigurationHandler configurationHandler;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException {
         configurationHandler = new ConfigurationHandler();
 
 
         // databaseHandler = new DatabaseHandler();
         
         databaseHandler = new DatabaseHandler();
+
+
         /* ######################################
          * #             CAPTIVE UNLOCKING      #
          * ######################################
@@ -89,7 +91,18 @@ public class App {
          * #      PROTECTION INITIALIZATION      #
          * #######################################
          */
-        GUI_Main.main(args);
+
+         //GUI_Main.main(args);
+        Thread downloadWatcherThread = new Thread(() -> {
+            try {
+                DownloadWatcher downloadWatcher = new DownloadWatcher();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }, "downloadWatcherThread");
+        downloadWatcherThread.start();
+        
+        
         // File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
         // SignatureUtilities signatureUtilities = new SignatureUtilities(file);
         // System.out.println("Analysis status: "+databaseHandler.isHashInDatabase(signatureUtilities.getMD5()));
