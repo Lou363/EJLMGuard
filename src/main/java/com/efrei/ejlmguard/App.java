@@ -58,6 +58,9 @@ public class App {
                 latch.await(); // Wait until the latch is counted down
             } catch (InterruptedException e) {
                 e.printStackTrace();
+            } finally {
+                databaseHandler.close();
+                databaseHandler = new DatabaseHandler();
             }
         // If not we check for updates
         } else {
@@ -87,6 +90,11 @@ public class App {
          * #######################################
          */
         GUI_Main.main(args);
+        // File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
+        // SignatureUtilities signatureUtilities = new SignatureUtilities(file);
+        // System.out.println("Analysis status: "+databaseHandler.isHashInDatabase(signatureUtilities.getMD5()));
+
+        // databaseHandler.listHashes();
 
 
         /* ######################################
