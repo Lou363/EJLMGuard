@@ -36,3 +36,5 @@ config.json
 # Ignore specific file or directory
 # /path/to/file.ext
  /vpdataset.db/
+ /config.json
+
