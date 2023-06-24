@@ -4,7 +4,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-
+import java.net.URISyntaxException;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
@@ -19,7 +19,7 @@ import com.efrei.ejlmguard.GUI.UpdateGUI;
 public class App {
     private static DatabaseHandler databaseHandler;
     private static ConfigurationHandler configurationHandler;
-    public static void main(String[] args) throws IOException {
+    public static void main(String[] args) throws IOException, InterruptedException, URISyntaxException {
         configurationHandler = new ConfigurationHandler();
 
 
@@ -89,12 +89,13 @@ public class App {
          * #      PROTECTION INITIALIZATION      #
          * #######################################
          */
-        GUI_Main.main(args);
-        // File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
-        // SignatureUtilities signatureUtilities = new SignatureUtilities(file);
-        // System.out.println("Analysis status: "+databaseHandler.isHashInDatabase(signatureUtilities.getMD5()));
+        //GUI_Main.main(args);
+        File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
+        WebAnalysis webAnalysis = new WebAnalysis("D:\\Users\\louis\\Downloads\\eicar.com");
+        webAnalysis.submitFileForScan();
+        Thread.sleep(10000);
+        webAnalysis.retrieveScanResult();
 
-        // databaseHandler.listHashes();
 
 
         /* ######################################
