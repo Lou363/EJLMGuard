@@ -7,6 +7,8 @@ import com.fasterxml.jackson.databind.node.ArrayNode;
 import java.nio.file.Files;
 import java.nio.file.Path;
 import java.nio.file.Paths;
+import java.util.Iterator;
+
 import okhttp3.*;
 
 
@@ -19,11 +21,15 @@ public class WebAnalysis {
     private String responseBody;
     private String scanId;
 
-    public WebAnalysis(String rawPath) {
+    public WebAnalysis(String rawPath) throws IOException {
         this.filePath = Paths.get(rawPath);
         // I check the file exists here
         if (!Files.exists(filePath)) {
             throw new IllegalArgumentException("File " + filePath + " does not exist");
+        }
+        // Check the file is less than 32MB
+        if (Files.size(filePath) > 32 * 1024 * 1024) {
+            throw new IllegalArgumentException("File " + filePath + " is too large");
         }
     }
 
@@ -46,7 +52,7 @@ public class WebAnalysis {
         try (Response response = httpClient.newCall(request).execute()) {
             if (response.isSuccessful()) {
                 assert response.body() != null;
-                String responseBody = response.body().string();
+                responseBody = response.body().string();
                 System.out.println(responseBody);
                 ObjectMapper objectMapper = new ObjectMapper();
                 JsonNode rootNode = objectMapper.readTree(responseBody);
@@ -58,58 +64,49 @@ public class WebAnalysis {
         }
     }
 
-    private void getAnalysisResult() throws IOException {
-        OkHttpClient httpClient = new OkHttpClient();
-        HttpUrl.Builder urlBuilder = HttpUrl.parse(VIRUS_TOTAL_SCAN_URL).newBuilder();
-        urlBuilder.addPathSegment(scanId);
+    private String fetchResultFromServer() throws IOException{
+        OkHttpClient client = new OkHttpClient();
+        
         Request request = new Request.Builder()
-                .url(urlBuilder.build())
-                .addHeader("x-apikey", VIRUS_TOTAL_API_KEY)
-                .build();
+        .url("https://www.virustotal.com/api/v3/analyses/"+scanId+"")
+        .get()
+        .addHeader("accept", "application/json")
+        .addHeader("x-apikey", "10fe6404a69483c94f3fbe26437c5242875e699692b99fb5f662cca5d3317495")
+        .build();
 
-        try (Response response = httpClient.newCall(request).execute()) {
-            responseBody = response.body().string();
-            System.out.println("--------------------");
-            System.out.println(responseBody);
-            System.out.println("--------------------");
-        }
+        Response response = client.newCall(request).execute();
+
+        return response.body().string();
     }
 
-    public void retrieveScanResult() {
-        System.out.println("File id: " + scanId);
-        try {
-            getAnalysisResult();
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
+    public boolean getIfMalicious() throws IOException {
+            ObjectMapper objectMapper = new ObjectMapper();
+            JsonNode jsonNode = objectMapper.readTree(fetchResultFromServer());
+            JsonNode dataNode = jsonNode.get("data");
+            JsonNode attributesNode = dataNode.get("attributes");
+            JsonNode statsNode = attributesNode.get("stats");
+            int detectedCount = statsNode.get("malicious").asInt() + statsNode.get("suspicious").asInt();
+            int totalCount = detectedCount + statsNode.get("undetected").asInt() + statsNode.get("harmless").asInt();
 
-        if (responseBody == null) {
-            System.out.println("Error getting analysis result.");
-            return;
-        }
-
-        ObjectMapper objectMapper = new ObjectMapper();
-        try {
-            JsonNode rootNode = objectMapper.readTree(responseBody);
-            ArrayNode scans = (ArrayNode) rootNode.path("data").path("attributes").path("last_analysis_results");
-
-            int totalScans = 0;
-            int positiveScans = 0;
-            virusName = null;
-
-            for (JsonNode scanResult : scans) {
-                totalScans++;
-                String status = scanResult.path("result").asText();
-                if (!status.isEmpty()) {
-                    if (virusName == null) {
-                        virusName = status;
+            if ((double) detectedCount / totalCount > 0.25) {
+                JsonNode resultsNode = attributesNode.get("results");
+                Iterator<String> fieldNames = resultsNode.fieldNames();
+                while (fieldNames.hasNext()) {
+                    String fieldName = fieldNames.next();
+                    JsonNode resultNode = resultsNode.get(fieldName);
+                    String category = resultNode.get("category").asText();
+                    if (category.equals("malicious") || category.equals("suspicious")) {
+                        virusName = resultNode.get("engine_name").asText() + ": " + resultNode.get("result").asText();
+                        break;
                     }
-                    positiveScans++;
                 }
+                return true;
             }
-        } catch (IOException e) {
-            e.printStackTrace();
+
+            return false;
         }
+
+    public String getVirusName() {
+        return virusName;
     }
 }

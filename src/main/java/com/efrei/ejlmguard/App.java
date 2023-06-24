@@ -91,12 +91,9 @@ public class App {
          * #      PROTECTION INITIALIZATION      #
          * #######################################
          */
-        GUI_Main.main(args);
-        // File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
-        // SignatureUtilities signatureUtilities = new SignatureUtilities(file);
-        // System.out.println("Analysis status: "+databaseHandler.isHashInDatabase(signatureUtilities.getMD5()));
+        // GUI_Main.main(args);
 
-
+        
 
         /* ######################################
          * #         END OF THE PROGRAM         #
