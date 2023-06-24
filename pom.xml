@@ -61,7 +61,6 @@
       <scope>test</scope>
     </dependency>
 
-
      <dependency>
     <groupId>org.openjfx</groupId>
     <artifactId>javafx-fxml</artifactId>
@@ -80,6 +79,11 @@
       <version>0.5</version>
     </dependency>
 
+    <dependency>
+      <groupId>org.scalafx</groupId>
+      <artifactId>scalafxml-core-sfx8_2.12</artifactId>
+      <version>0.5</version>
+    </dependency>
 
   </dependencies>
   <build>

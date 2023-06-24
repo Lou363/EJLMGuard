@@ -7,6 +7,8 @@ import java.security.DigestInputStream;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
 
+import javax.lang.model.SourceVersion;
+
 public class SignatureUtilities {
 
     private String md5;
@@ -28,6 +30,9 @@ public class SignatureUtilities {
             e.printStackTrace();
         }
 
+    }
+
+    public SignatureUtilities() {
     }
 
     private String calculateHash(String algorithm) throws NoSuchAlgorithmException, IOException {
