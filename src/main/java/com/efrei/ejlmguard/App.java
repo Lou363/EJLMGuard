@@ -32,6 +32,7 @@ public class App {
          * ######################################
          */
         //TODO: add ip adress of pfsense on GUI
+        //TODO: separate the connection from main thread
         String fwAdress = "192.168.1.254";
         // call class VoucherCatcher
         try{
