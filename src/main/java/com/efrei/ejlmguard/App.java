@@ -91,8 +91,17 @@ public class App {
          * #      PROTECTION INITIALIZATION      #
          * #######################################
          */
-        // GUI_Main.main(args);
-
+        
+        Thread thread = new Thread(() -> {
+            try {
+                DownloadWatcher downloadWatcher = new DownloadWatcher();
+            } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
+        });
+        thread.start();
+        GUI_Main.main(args);
         
 
         /* ######################################
