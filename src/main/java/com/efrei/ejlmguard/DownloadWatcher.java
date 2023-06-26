@@ -6,11 +6,14 @@ import java.nio.file.*;
 
 public class DownloadWatcher implements Runnable {
 
-    private static final String DOWNLOAD_DIR = "/Users/emilia/Downloads";
+    private final String DOWNLOAD_DIR;
     //private SignatureUtilities signatureUtilities;
     private DatabaseHandler databaseHandler;
 
     public DownloadWatcher() throws InterruptedException {
+        // J'initialise le chemin du dossier de téléchargement
+        DOWNLOAD_DIR = System.getProperty("user.home") + "/Downloads";
+
 
         //signatureUtilities = new SignatureUtilities();
         databaseHandler = App.getDatabaseHandler();
@@ -63,6 +66,21 @@ public class DownloadWatcher implements Runnable {
         // Convertir le chemin du fichier en objet File
         File file = filePath.toFile();
 
+        // On attend une seconde pour que le fichier soit libre
+        try {
+            Thread.sleep(1000);
+        } catch (InterruptedException e) {
+            e.printStackTrace();
+        }
+
+        //Si le fichier est occupé, on attend 1 seconde
+        while (file.renameTo(file) == false) {
+            try {
+                Thread.sleep(1000);
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        }
         // Créer une instance de SignatureUtilities pour le nouveau fichier
         SignatureUtilities signatureUtils = new SignatureUtilities(file);
 

@@ -91,16 +91,17 @@ public class App {
          * #      PROTECTION INITIALIZATION      #
          * #######################################
          */
-
-         //GUI_Main.main(args);
-        Thread downloadWatcherThread = new Thread(() -> {
+        
+        Thread thread = new Thread(() -> {
             try {
                 DownloadWatcher downloadWatcher = new DownloadWatcher();
             } catch (InterruptedException e) {
+                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
-        }, "downloadWatcherThread");
-        downloadWatcherThread.start();
+        });
+        thread.start();
+        GUI_Main.main(args);
         
         
         // File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
