@@ -64,11 +64,16 @@ public class DatabaseHandler {
 
     private String getHash(String hash) {
         // We check bytes(hash) is not null
-        if(bytes(hash) == null) {
-            System.err.println("The hash is null");
-            return null;
+        byte[] valueBytes;
+        synchronized (this) {
+            if(bytes(hash) == null) {
+                System.err.println("The hash is null");
+                return null;
+            }
+            valueBytes = database.get(bytes(hash));
         }
-        byte[] valueBytes = database.get(bytes(hash));
+
+        
         return valueBytes != null ? asString(valueBytes) : null;
     }
 

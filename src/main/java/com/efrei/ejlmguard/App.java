@@ -114,7 +114,10 @@ public class App {
         /* ######################################
          * #         END OF THE PROGRAM         #
          * ######################################
+         * 
          */
+        thread.join();
+        System.out.println("[General] Closing database connection...");
         databaseHandler.close();
     }
 
