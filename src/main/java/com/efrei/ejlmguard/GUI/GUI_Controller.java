@@ -3,6 +3,8 @@ package com.efrei.ejlmguard.GUI;
 import com.efrei.ejlmguard.*;
 
 import java.io.File;
+import java.io.IOException;
+
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
 import javax.swing.JOptionPane;
@@ -11,6 +13,9 @@ import javax.swing.filechooser.FileSystemView;
 import com.efrei.ejlmguard.SignatureUtilities;
 import com.efrei.ejlmguard.DatabaseHandler;
 import com.efrei.ejlmguard.App;
+import com.efrei.ejlmguard.WebAnalysis;
+import com.efrei.ejlmguard.DownloadWatcher;
+import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
 
 
 import javafx.event.ActionEvent;
@@ -23,7 +28,11 @@ import javafx.scene.control.TextField;
 
 public class GUI_Controller {
 
+  Thread downloadwatcher = App.getDownloadWatcher();
     DatabaseHandler db = App.getDatabaseHandler();
+    boolean isMalicious = false;
+    boolean VirusTotal = false;
+    String virusName;
 
    @FXML
     private Button Analyser;
@@ -45,16 +54,26 @@ public class GUI_Controller {
 
     @FXML
     void VirusTotal(ActionEvent event) {
-
+       if (toggleWatcher.isSelected()){
+        VirusTotal = true;
+      }
+      else{
+        VirusTotal = false;
+      }
     }
+
+
+    
 
     @FXML
   void activateWatch(ActionEvent event) {
       if (toggleWatcher.isSelected()){
-        toggleWatcher.setText("Opérationnelle");
+        toggleWatcher.setText("Activée");
+        App.setDownloadWatcher(App.startDownloadWatcher());
       }
       else{
         toggleWatcher.setText("Désactivée");
+        App.stopRealTimeProtection();
       }
   }
 
@@ -95,14 +114,27 @@ public class GUI_Controller {
         frame.setLocationRelativeTo(null);
         frame.setSize(350, 150);
         frame.setVisible(true);
-        try {
-          Thread.sleep(1500);
-          frame.setVisible(false);
-        } catch (InterruptedException e) {
-          // TODO Auto-generated catch block
-          e.printStackTrace();
+        if (VirusTotal){
+          try {
+            WebAnalysis wb = new WebAnalysis(Path);
+            wb.submitFileForScan();
+            isMalicious = wb.getIfMalicious();
+            if(isMalicious) virusName = wb.getVirusName();
+            frame.setVisible(false);
+          } catch (Exception e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+        }else{
+          try {
+            Thread.sleep(1500);
+            frame.setVisible(false);
+          } catch (InterruptedException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+          }
+          
         }
-        
         return f;
       /*File f = new File(adapted);
       FileWriter fw = new FileWriter(f, true); //filewriiter allows to write to the directory
@@ -120,6 +152,15 @@ public class GUI_Controller {
     
   }
 
+  public String resultVirusTotal(){
+    if(isMalicious){
+      return "VirusTotal: malveillance détectée";
+    }
+    else{
+      return "VirusTotal: pas de malveillance détectée";
+    }
+  }
+
   @FXML
   void analyse(ActionEvent event) {
     if(placeholder.getText() == "" ){
@@ -130,19 +171,21 @@ public class GUI_Controller {
         File f = getFile(placeholder.getText());
         SignatureUtilities si = new SignatureUtilities(f);
         //System.out.println(si.getMD5() + "\n" + si.getSha1() + "\n" + si.getSha256());
+       
 
         if(db.isHashInDatabase(si.getMD5())){
 
-          test.setText("\n\n  " + db.findDescription(si.getMD5()));
+          test.setText("\n\n  Base de donnée: menace détéctée, \n" + db.findDescription(si.getMD5()) + "\n" + resultVirusTotal());
 
           Result.setContent(test);
-        }else{
-          //System.out.println("nope");
-          test.setText("\n\n  Aucune menace n'a été detectée");
-          
 
-                  
+          new ThreatDetectedGUI(db.findDescription(si.getMD5()), f.getPath(), DetectorName.USERSCAN); 
+        }else{
+          
+            test.setText("\n\n  Base de donnée: pas de menace détéctée \n" + resultVirusTotal());
+                          
           //test.setText(",opiajdf`\n\nefzdn\nfzed\nzfd\nvec\n\n\nfdzsaiojuhycghdn,koskixuchyghjbzn,dklpxqoiuhcjndz;lxpsiuihy\n\ngdzyuaiszoj_dygucbn,dskxqoduygfbzchjnk,opdsç_yghdbz en,;ldxpoij\n\n\nzgvubcnjx,zsikeuzcugf\n\n\nvzgebhjskizduchy");    
+          if (isMalicious) new ThreatDetectedGUI(virusName, f.getPath(), DetectorName.VIRUSTOTAL); 
 
           Result.setContent(test);
           //System.out.println(db.findDescription(si.getMD5()));

@@ -2,7 +2,6 @@ package com.efrei.ejlmguard;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
-import java.io.File;
 import java.io.IOException;
 
 import java.nio.file.Files;
@@ -19,6 +18,9 @@ import com.efrei.ejlmguard.GUI.UpdateGUI;
 public class App {
     private static DatabaseHandler databaseHandler;
     private static ConfigurationHandler configurationHandler;
+    private static Thread downloadWatcherThread;
+    private static DownloadWatcher downloadWatcher;
+
     public static void main(String[] args) throws IOException, InterruptedException {
         configurationHandler = new ConfigurationHandler();
 
@@ -92,15 +94,15 @@ public class App {
          * #######################################
          */
         
-        Thread thread = new Thread(() -> {
+        /*downloadWatcherThread = new Thread(() -> {
             try {
-                DownloadWatcher downloadWatcher = new DownloadWatcher();
+                downloadWatcher = new DownloadWatcher();
             } catch (InterruptedException e) {
-                // TODO Auto-generated catch block
                 e.printStackTrace();
             }
         });
-        thread.start();
+        downloadWatcherThread.start();*/
+        Thread downloadWatcherThread = startDownloadWatcher();
         GUI_Main.main(args);
         
         
@@ -114,12 +116,47 @@ public class App {
         /* ######################################
          * #         END OF THE PROGRAM         #
          * ######################################
+         * 
          */
+        try {
+            downloadWatcherThread.join();
+        } catch (InterruptedException e) {
+            System.out.println("[General] Thread interrupted by user.");
+        } catch (Exception e) {
+            System.out.println("[General] An error occured while closing the thread.\nHowever, the program will continue to run.");
+        }
+        
+        System.out.println("[General] Closing database connection...");
         databaseHandler.close();
+    }
+
+    public static Thread startDownloadWatcher(){
+        downloadWatcherThread = new Thread(() -> {
+            try {
+                downloadWatcher = new DownloadWatcher();
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
+        });
+        downloadWatcherThread.start();
+        return downloadWatcherThread;
     }
 
     public static DatabaseHandler getDatabaseHandler() {
         return databaseHandler;
+    }
+
+
+    public static void setDownloadWatcher(Thread newDownloadWatcherThread){
+        downloadWatcherThread = newDownloadWatcherThread;
+    }
+
+    public static Thread getDownloadWatcher(){
+        return downloadWatcherThread;
+    }
+
+    public static void stopRealTimeProtection() {
+        downloadWatcherThread.interrupt();
     }
 
     public static ConfigurationHandler getConfigurationHandler() {
@@ -150,5 +187,9 @@ public class App {
 
         // Exit the current program
         System.exit(0);
+    }
+
+    public void setProtectionStatus(boolean status) {
+        downloadWatcher.setRealTimeProtection(status);
     }
 }

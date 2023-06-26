@@ -4,8 +4,12 @@ import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
 
+import com.efrei.ejlmguard.GUI.DetectorName;
+import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
+
 public class DownloadWatcher implements Runnable {
 
+    private boolean realTimeProtection = true;
     private final String DOWNLOAD_DIR;
     //private SignatureUtilities signatureUtilities;
     private DatabaseHandler databaseHandler;
@@ -61,6 +65,9 @@ public class DownloadWatcher implements Runnable {
     }
 
     public void handleDownloadedFile(Path filePath) {
+        if(!realTimeProtection) {
+            return;
+        }
         System.out.println("Nouveau fichier téléchargé : " + filePath.toString());
 
         // Convertir le chemin du fichier en objet File
@@ -86,12 +93,12 @@ public class DownloadWatcher implements Runnable {
 
         // Récupérer le MD5 du fichier
         String md5 = signatureUtils.getMD5();
-        System.out.println("MD5 : " + md5);
         // Vérifier si le fichier est sûr en utilisant isHashInDatabase
         boolean isSafe = databaseHandler.isHashInDatabase(md5);
 
         if (isSafe) {
             System.out.println("Le fichier n'est pas sûr.");
+            new ThreatDetectedGUI(databaseHandler.findDescription(md5), filePath.toString(), DetectorName.REALTIME);
         } else {
             System.out.println("Le fichier est sûr.");
         }
@@ -105,5 +112,9 @@ public class DownloadWatcher implements Runnable {
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
+    }
+
+    public void setRealTimeProtection(boolean status) {
+        this.realTimeProtection = status;
     }
 }
