@@ -30,10 +30,11 @@
                   </Label>
                   <Button id="analyseButton" fx:id="parcourir" layoutX="204.0" layoutY="44.0" mnemonicParsing="false" onAction="#findFile" prefHeight="21.0" prefWidth="77.0" text="Parcourir" />
                   <Label layoutX="14.0" layoutY="48.0" text="Sélectionner le fichier à analyser" />
-                  <Label layoutX="14.0" layoutY="110.0" prefHeight="17.0" prefWidth="228.0" text="ou entrez le chemin menant au fichier" />
-                  <TextField fx:id="placeholder" layoutX="13.0" layoutY="161.0" onAction="#findFile" prefHeight="25.0" prefWidth="271.0" />
+                  <Label layoutX="14.0" layoutY="69.0" prefHeight="17.0" prefWidth="228.0" text="ou entrez le chemin menant au fichier" />
+                  <TextField fx:id="placeholder" layoutX="14.0" layoutY="116.0" onAction="#findFile" prefHeight="25.0" prefWidth="271.0" />
                   <Button id="analyseButton" fx:id="Analyser" layoutX="100.0" layoutY="195.0" mnemonicParsing="false" onAction="#analyse" prefHeight="40.0" prefWidth="98.0" text="Analyser" />
-                  <Label layoutX="14.0" layoutY="128.0" prefHeight="17.0" prefWidth="228.0" text="sous la forme ..\..\.." />
+                  <Label layoutX="14.0" layoutY="86.0" prefHeight="17.0" prefWidth="228.0" text="sous la forme ..\..\.." />
+                  <CheckBox fx:id="VirusTotalButton" layoutX="57.0" layoutY="156.0" mnemonicParsing="false" onAction="#VirusTotal" text="Activer l'analyse web VirusTotal" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">

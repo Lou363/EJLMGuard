@@ -37,21 +37,28 @@ public class GUI_Controller {
     @FXML
     private TextField placeholder;
 
-      @FXML
+    @FXML
     private CheckBox toggleWatcher;
 
     @FXML
-    void activateWatch(ActionEvent event) {
-        if (toggleWatcher.isSelected()){
-          toggleWatcher.setText("Opérationnelle");
-        }
-        else{
-          toggleWatcher.setText("Désactivée");
-        }
+    private CheckBox VirusTotalButton;
+
+    @FXML
+    void VirusTotal(ActionEvent event) {
+
     }
 
-    Label test = new Label(null);
+    @FXML
+  void activateWatch(ActionEvent event) {
+      if (toggleWatcher.isSelected()){
+        toggleWatcher.setText("Opérationnelle");
+      }
+      else{
+        toggleWatcher.setText("Désactivée");
+      }
+  }
 
+  Label test = new Label(null);
 
   @FXML
   void findFile(ActionEvent event) {
