@@ -18,11 +18,19 @@ public class VoucherCatcher {
     // Receive server response
     InputStream in = clientSocket.getInputStream();
     BufferedReader reader = new BufferedReader(new InputStreamReader(in));
-    voucher = reader.readLine();
-    System.out.println(voucher);
+    String response = reader.readLine();
+    if (response == null || response == "Error: Connexion refused") {
+        clientSocket.close();
+        throw new IOException();
+    }
+    else{
+        voucher = response;
+        System.out.println("voucher : " + voucher);
+        clientSocket.close();
+    }
+    
 
-    // Close the socket
-    clientSocket.close();
+    
     }
 
     public static void voucherSender(String voucher , String fwAdress) throws IOException {

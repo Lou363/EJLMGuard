@@ -36,7 +36,7 @@ public class App {
         // call class VoucherCatcher
         try{
             VoucherCatcher.scriptPinger(fwAdress, 666);
-        }catch(IOException IOe){
+        }catch(IOException e){
             System.out.println("Connection Error");
         }
         
