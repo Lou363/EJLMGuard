@@ -4,11 +4,9 @@ import java.io.*;
 import java.net.*;
 
 public class VoucherCatcher {
-    private int port = 666;
-    private String fwAdress = "192.168.1.254";
-    private String voucher = "";
+    private static String voucher = "";
 
-    private void scriptPinger(String voucher, int port) throws IOException {
+    public static void scriptPinger(String fwAdress, int port) throws IOException {
     // Create a socket to connect to the server on port 666
     Socket clientSocket = new Socket(fwAdress, port);
 
@@ -27,7 +25,7 @@ public class VoucherCatcher {
     clientSocket.close();
     }
 
-    private void voucherSender(String voucher , String fwAdress) throws IOException {
+    public static void voucherSender(String voucher , String fwAdress) throws IOException {
         // Set the Captive Portal URL
         String captivePortalURL = "https://" + fwAdress + ":8002";
             
@@ -60,8 +58,8 @@ public class VoucherCatcher {
         connection.disconnect();
     }
 
-    public Boolean InternetCheck() throws IOException {
-        InetAddress address = InetAddress.getByName("www.google.com");
+    public static Boolean InternetCheck() throws IOException {
+        InetAddress address = InetAddress.getByName("1.1.1.1");
         boolean reachable = address.isReachable(10000);
         if (reachable) {
             System.out.println("Internet access is available.");
@@ -73,30 +71,8 @@ public class VoucherCatcher {
         
     }
     
-    //getter and setter for port
-    public int getPort() {
-        return port;
-    }
-
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    //getter and setter for fwAdress
-    public String getFwAdress() {
-        return fwAdress;
-    }
-
-    public void setFwAdress(String fwAdress) {
-        this.fwAdress = fwAdress;
-    }
-
-    //getter and setter for voucher
-    public String getVoucher() {
+    //getter for voucher
+    public static String getVoucher() {
         return voucher;
-    }
-
-    public void setVoucher(String voucher) {
-        this.voucher = voucher;
     }
 }

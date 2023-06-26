@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 import com.efrei.ejlmguard.GUI.DatabasePusher;
 import com.efrei.ejlmguard.GUI.GUI_Main;
 import com.efrei.ejlmguard.GUI.UpdateGUI;
+import com.efrei.ejlmguard.VoucherCatcher;
 
 import java.io.*;
 import java.net.*;
@@ -30,10 +31,19 @@ public class App {
          * #             CAPTIVE UNLOCKING      #
          * ######################################
          */
-
-         
-
-
+        //TODO: add ip adress of pfsense on GUI
+        String fwAdress = "192.168.1.254";
+        // call class VoucherCatcher
+        try{
+            VoucherCatcher.scriptPinger(fwAdress, 666);
+        }catch(IOException IOe){
+            System.out.println("Connection Error");
+        }
+        
+        while(VoucherCatcher.InternetCheck()){
+            VoucherCatcher.voucherSender(VoucherCatcher.getVoucher(), fwAdress);
+        }
+        
         /* #######################################
          * #            VPS UPDATE CHECKING      #
          * #######################################
