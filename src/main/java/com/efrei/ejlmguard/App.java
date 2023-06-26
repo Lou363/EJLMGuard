@@ -4,7 +4,7 @@ import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
 import java.io.File;
 import java.io.IOException;
-import java.net.URISyntaxException;
+
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
@@ -103,6 +103,13 @@ public class App {
         thread.start();
         GUI_Main.main(args);
         
+        
+        // File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
+        // SignatureUtilities signatureUtilities = new SignatureUtilities(file);
+        // System.out.println("Analysis status: "+databaseHandler.isHashInDatabase(signatureUtilities.getMD5()));
+
+        // databaseHandler.listHashes();
+
 
         /* ######################################
          * #         END OF THE PROGRAM         #
