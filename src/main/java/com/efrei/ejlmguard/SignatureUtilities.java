@@ -27,6 +27,7 @@ public class SignatureUtilities {
             sha1 = calculateHash("SHA-1");
             sha256 = calculateHash("SHA-256");
         } catch (NoSuchAlgorithmException | IOException e) {
+            System.out.println("Error while calculating hash");
             e.printStackTrace();
         }
 

@@ -38,6 +38,8 @@ public class DatabaseHandler {
     }
 
     public boolean isHashInDatabase(String md5Hash){
+        System.out.println("The received hash is: " + md5Hash + " and the database contains:");
+
         return getHash(md5Hash) != null;
     }
 

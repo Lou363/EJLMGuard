@@ -68,7 +68,7 @@ public class DownloadWatcher implements Runnable {
 
         // Récupérer le MD5 du fichier
         String md5 = signatureUtils.getMD5();
-
+        System.out.println("MD5 : " + md5);
         // Vérifier si le fichier est sûr en utilisant isHashInDatabase
         boolean isSafe = databaseHandler.isHashInDatabase(md5);
 
