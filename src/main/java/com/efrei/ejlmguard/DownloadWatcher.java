@@ -73,9 +73,9 @@ public class DownloadWatcher implements Runnable {
         boolean isSafe = databaseHandler.isHashInDatabase(md5);
 
         if (isSafe) {
-            System.out.println("Le fichier est sûr.");
-        } else {
             System.out.println("Le fichier n'est pas sûr.");
+        } else {
+            System.out.println("Le fichier est sûr.");
         }
 
     }
