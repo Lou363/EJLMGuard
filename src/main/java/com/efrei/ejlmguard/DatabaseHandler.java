@@ -37,11 +37,15 @@ public class DatabaseHandler {
         putHash("258547e4dc8e7bf245533991345e6eb7", "NotAVirus");
     }
 
-    public boolean isHashInDatabase(String md5Hash){
+    public boolean isHashInDatabase(String md5Hash) {
+        if (database == null) {
+            System.err.println("Database is not initialized");
+            return false;
+        }
         System.out.println("The received hash is: " + md5Hash + " and the database contains:");
-
         return getHash(md5Hash) != null;
     }
+
 
     public String findDescription(String hash) {
         String description = getHash(hash);
@@ -59,6 +63,11 @@ public class DatabaseHandler {
     }
 
     private String getHash(String hash) {
+        // We check bytes(hash) is not null
+        if(bytes(hash) == null) {
+            System.err.println("The hash is null");
+            return null;
+        }
         byte[] valueBytes = database.get(bytes(hash));
         return valueBytes != null ? asString(valueBytes) : null;
     }
