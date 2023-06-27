@@ -7,62 +7,25 @@ import java.nio.file.*;
 import com.efrei.ejlmguard.GUI.DetectorName;
 import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
 
-public class DownloadWatcher implements Runnable {
+public class DownloadWatcher { // implements Runnable {
 
+    private boolean continueOperations;
     private boolean realTimeProtection = true;
     private final String DOWNLOAD_DIR;
+    private File endFile;
     //private SignatureUtilities signatureUtilities;
     private DatabaseHandler databaseHandler;
 
     public DownloadWatcher() throws InterruptedException {
         // J'initialise le chemin du dossier de téléchargement
-        DOWNLOAD_DIR = System.getProperty("user.home") + "/Downloads";
-
+        this.DOWNLOAD_DIR = System.getProperty("user.home") + "/Downloads";
+        this.continueOperations = true;
 
         //signatureUtilities = new SignatureUtilities();
-        databaseHandler = App.getDatabaseHandler();
-
-        try {
-            // Crée un objet WatchService
-            WatchService watchService = FileSystems.getDefault().newWatchService();
-
-            // Enregistre le répertoire pour la surveillance des événements de création
-            Path dir = Paths.get(DOWNLOAD_DIR);
-            dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
-
-            System.out.println("Surveillance du répertoire " + DOWNLOAD_DIR + " en cours...");
-
-            // Boucle infinie pour attendre les événements de création de fichiers
-            while (true) {
-                // Attend les événements
-                WatchKey key = watchService.take();
-
-                // Parcourt tous les événements reçus
-                for (WatchEvent<?> event : key.pollEvents()) {
-                    WatchEvent.Kind<?> kind = event.kind();
-
-                    // Vérifie si un nouveau fichier a été créé
-                    if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                        // Récupère le nom du fichier créé
-                        WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
-                        Path filePath = dir.resolve(pathEvent.context());
-
-                        // Effectue une action sur le fichier téléchargé
-                        handleDownloadedFile(filePath);
-                    }
-                }
-
-                // Réinitialise la clé pour la prochaine itération
-                boolean valid = key.reset();
-                if (!valid) {
-                    // La clé n'est plus valide, arrête la surveillance
-                    break;
-                }
-            }
-        } catch (IOException | InterruptedException e) {
-            e.printStackTrace();
-        }
+        this.databaseHandler = App.getDatabaseHandler();
     }
+
+
 
     public void handleDownloadedFile(Path filePath) {
         if(!realTimeProtection) {
@@ -105,16 +68,69 @@ public class DownloadWatcher implements Runnable {
 
     }
 
-    @Override
     public void run() {
         try {
-            new DownloadWatcher();
-        } catch (InterruptedException e) {
+            // Crée un objet WatchService
+            WatchService watchService = FileSystems.getDefault().newWatchService();
+
+            // Enregistre le répertoire pour la surveillance des événements de création
+            Path dir = Paths.get(DOWNLOAD_DIR);
+            dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
+
+            System.out.println("Surveillance du répertoire " + DOWNLOAD_DIR + " en cours...");
+
+            // Boucle infinie pour attendre les événements de création de fichiers
+            while (continueOperations) {
+                // Attend les événements
+                WatchKey key = watchService.take();
+
+                // Parcourt tous les événements reçus
+                for (WatchEvent<?> event : key.pollEvents()) {
+                    WatchEvent.Kind<?> kind = event.kind();
+
+                    // Vérifie si un nouveau fichier a été créé
+                    if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
+                        // Récupère le nom du fichier créé
+                        WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
+                        Path filePath = dir.resolve(pathEvent.context());
+
+                        // Effectue une action sur le fichier téléchargé
+                        handleDownloadedFile(filePath);
+                    }
+                }
+
+                // Réinitialise la clé pour la prochaine itération
+                boolean valid = key.reset();
+                if (!valid) {
+                    // La clé n'est plus valide, arrête la surveillance
+                    break;
+                }
+            }
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
 
     public void setRealTimeProtection(boolean status) {
         this.realTimeProtection = status;
+        if(realTimeProtection) 
+            System.out.println("[EJLMGuard] Protection en temps réel activée.");
+        else 
+            System.out.println("[EJLMGuard] Protection en temps réel désactivée.");
+    }
+
+    public void stop() {
+        this.continueOperations = false;
+        // I make an event in the download folder to wake up the thread
+        // I create a file and delete it to wake up the thread
+        try {
+            endFile = new File(DOWNLOAD_DIR + "/stop.txt");
+            endFile.createNewFile();
+            // I write "IGNORE AND DELETE THIS FILE IN FOUND" in the file
+            Files.write(endFile.toPath(), "IGNORE AND DELETE THIS FILE IN FOUND".getBytes());
+
+        } catch (IOException e) {
+            e.printStackTrace();
+        }
     }
 }

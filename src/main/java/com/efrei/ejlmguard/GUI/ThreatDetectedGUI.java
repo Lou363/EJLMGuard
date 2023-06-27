@@ -24,7 +24,6 @@ public class ThreatDetectedGUI extends JFrame {
         setLocationRelativeTo(null);
         setResizable(true);
         setLayout(new BorderLayout());
-        setVisible(true);
         getContentPane().setBackground(Color.WHITE);
         welcomeLabel = new JLabel("Threat Detected");
         welcomeLabel.setForeground(Color.RED);
@@ -73,6 +72,14 @@ public class ThreatDetectedGUI extends JFrame {
         quarantineButton.addActionListener(new QuarantineButtonAction());
         // I set the panel to the foreground
         mainPanel.requestFocus();
+        try{
+            UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+        // I render the window and make it visible
+        repaint();
+        setVisible(true);
     }
 
     /* ################################

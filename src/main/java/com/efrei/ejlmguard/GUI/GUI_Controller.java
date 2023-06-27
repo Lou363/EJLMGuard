@@ -69,11 +69,11 @@ public class GUI_Controller {
   void activateWatch(ActionEvent event) {
       if (toggleWatcher.isSelected()){
         toggleWatcher.setText("Activée");
-        App.setDownloadWatcher(App.startDownloadWatcher());
+        App.setProtectionStatus(true);
       }
       else{
         toggleWatcher.setText("Désactivée");
-        App.stopRealTimeProtection();
+        App.setProtectionStatus(false);
       }
   }
 
