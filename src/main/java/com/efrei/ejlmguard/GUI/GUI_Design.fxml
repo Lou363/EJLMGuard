@@ -35,7 +35,6 @@
                   <Button id="analyseButton" fx:id="Analyser" layoutX="100.0" layoutY="203.0" mnemonicParsing="false" onAction="#analyse" prefHeight="40.0" prefWidth="98.0" text="Analyser" />
                   <Label layoutX="14.0" layoutY="86.0" prefHeight="17.0" prefWidth="228.0" text="sous la forme ..\..\.." />
                   <CheckBox fx:id="VirusTotalButton" layoutX="57.0" layoutY="156.0" mnemonicParsing="false" onAction="#VirusTotal" text="Activer l'analyse web VirusTotal" />
-                  <Label layoutX="94.0" layoutY="173.0" prefHeight="17.0" prefWidth="110.0" text="(Pas plus de 32 Mb)" />
                </children>
             </AnchorPane>
           <AnchorPane minHeight="0.0" minWidth="0.0" prefHeight="160.0" prefWidth="100.0">
@@ -53,6 +52,7 @@
                   </Label>
                   <CheckBox fx:id="toggleWatcher" layoutX="164.0" layoutY="158.0" mnemonicParsing="false" onAction="#activateWatch" selected="true" text="Activée" />
                   <Label layoutX="14.0" layoutY="158.0" text="Surveillance en temps réel :" />
+                  <Button fx:id="Arreter" layoutX="125.0" layoutY="217.0" mnemonicParsing="false" onAction="#shutDown" prefHeight="32.0" prefWidth="63.0" text="Arreter" />
                </children>
             </AnchorPane>
         </items>

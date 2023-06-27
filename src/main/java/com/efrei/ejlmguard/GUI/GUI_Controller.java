@@ -4,6 +4,7 @@ import com.efrei.ejlmguard.*;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.file.Files;
 
 import javax.swing.JFileChooser;
 import javax.swing.JFrame;
@@ -114,7 +115,7 @@ public class GUI_Controller {
         frame.setLocationRelativeTo(null);
         frame.setSize(350, 150);
         frame.setVisible(true);
-        if (VirusTotal){
+        if (VirusTotal && f.length() < 32 * 1024 * 1024){
           try {
             WebAnalysis wb = new WebAnalysis(Path);
             wb.submitFileForScan();
@@ -127,6 +128,7 @@ public class GUI_Controller {
           }
         }else{
           try {
+            if(f.length() < 32 * 1024 * 1024) JOptionPane.showMessageDialog(null, "Fichier trop volumineux \n(32 Mb maximum)");
             Thread.sleep(1500);
             frame.setVisible(false);
           } catch (InterruptedException e) {
@@ -175,14 +177,14 @@ public class GUI_Controller {
 
         if(db.isHashInDatabase(si.getMD5())){
 
-          test.setText("\n\n  Base de donnée: menace détéctée, \n" + db.findDescription(si.getMD5()) + "\n" + resultVirusTotal());
+          test.setText("\n Base de donnée: menace détéctée, \n" + db.findDescription(si.getMD5()) + "\n" + resultVirusTotal());
 
           Result.setContent(test);
 
           new ThreatDetectedGUI(db.findDescription(si.getMD5()), f.getPath(), DetectorName.USERSCAN); 
         }else{
           
-            test.setText("\n\n  Base de donnée: pas de menace détéctée \n" + resultVirusTotal());
+            test.setText("\n Base de donnée: pas de menace détéctée \n" + resultVirusTotal());
                           
           //test.setText(",opiajdf`\n\nefzdn\nfzed\nzfd\nvec\n\n\nfdzsaiojuhycghdn,koskixuchyghjbzn,dklpxqoiuhcjndz;lxpsiuihy\n\ngdzyuaiszoj_dygucbn,dskxqoduygfbzchjnk,opdsç_yghdbz en,;ldxpoij\n\n\nzgvubcnjx,zsikeuzcugf\n\n\nvzgebhjskizduchy");    
           if (isMalicious) new ThreatDetectedGUI(virusName, f.getPath(), DetectorName.VIRUSTOTAL); 

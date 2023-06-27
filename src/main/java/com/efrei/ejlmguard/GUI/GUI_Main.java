@@ -28,7 +28,6 @@ public class GUI_Main extends Application {
         Scene scene = new Scene(root);
         primaryStage.setScene(scene);
         primaryStage.show();
-                
        
     }
  
