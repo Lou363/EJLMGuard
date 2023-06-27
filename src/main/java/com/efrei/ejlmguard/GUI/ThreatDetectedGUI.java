@@ -1,10 +1,14 @@
 package com.efrei.ejlmguard.GUI;
 
 import javax.swing.*;
+
+import com.efrei.ejlmguard.ThreatQuarantineHandler;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
+import java.io.File;
 
 public class ThreatDetectedGUI extends JFrame {
     
@@ -16,9 +20,13 @@ public class ThreatDetectedGUI extends JFrame {
     private JButton ignoreButton;
     private JButton deleteButton;
     private JButton quarantineButton;
+    private File file;
 
     public ThreatDetectedGUI(String threatName, String filePath, DetectorName dection){
         super("Threat Detected!");
+        // I convert the file path to a File object so I can use it in the action listeners
+        file = new File(filePath);
+        // I initialize the GUI
         setSize(400, 250);
         setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setLocationRelativeTo(null);
@@ -101,14 +109,20 @@ public class ThreatDetectedGUI extends JFrame {
 
     public class DeleteButtonAction implements ActionListener{
         public void actionPerformed(ActionEvent e){
-            // TODO: I need to delete the file
-            System.out.println("[Threat Handler] Delete requested by user.");
+            // I force the deletion of the file
+            file.delete();
+            System.out.println("[Threat Handler] Delete successful.");
+            dispose();
         }
     }
 
     public class QuarantineButtonAction implements ActionListener{
         public void actionPerformed(ActionEvent e){
             System.out.println("[Threat Handler] Quarantine requested by user.");
+            // I quarantine the file
+            ThreatQuarantineHandler.moveToQuarantine(file);
+            System.out.println("[Threat Handler] Quarantine successful.");
+            dispose();
         }
     }
 }
