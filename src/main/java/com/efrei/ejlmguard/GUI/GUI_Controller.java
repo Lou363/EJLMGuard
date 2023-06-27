@@ -53,6 +53,9 @@ public class GUI_Controller {
     @FXML
     private CheckBox VirusTotalButton;
 
+      @FXML
+    private Button Arreter;
+
     @FXML
     void VirusTotal(ActionEvent event) {
        if (toggleWatcher.isSelected()){
@@ -201,7 +204,10 @@ public class GUI_Controller {
     }
   }
 
-  
+      @FXML
+    void shutDown(ActionEvent event) {
+
+    }
 
 }
 
