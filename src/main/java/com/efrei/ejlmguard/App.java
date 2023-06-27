@@ -94,23 +94,21 @@ public class App {
          * #######################################
          */
         
-        /*downloadWatcherThread = new Thread(() -> {
-            try {
-                downloadWatcher = new DownloadWatcher();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
+        downloadWatcher = new DownloadWatcher();
+        downloadWatcherThread = new Thread(() -> {
+            downloadWatcher.run();
         });
-        downloadWatcherThread.start();*/
-        Thread downloadWatcherThread = startDownloadWatcher();
+        downloadWatcherThread.start();
+        Thread.sleep(1000);
+
+
+        if(downloadWatcher == null){
+            System.out.println("[FATAL] Download watcher thread failed to start.");
+            System.exit(1);
+        }
         GUI_Main.main(args);
         
-        
-        // File file = new File("D:\\Users\\louis\\Downloads\\eicar.com");
-        // SignatureUtilities signatureUtilities = new SignatureUtilities(file);
-        // System.out.println("Analysis status: "+databaseHandler.isHashInDatabase(signatureUtilities.getMD5()));
-
-        // databaseHandler.listHashes();
+        downloadWatcher.stop();
 
 
         /* ######################################
@@ -118,6 +116,9 @@ public class App {
          * ######################################
          * 
          */
+
+         downloadWatcher.stop();
+
         try {
             downloadWatcherThread.join();
         } catch (InterruptedException e) {
@@ -125,27 +126,26 @@ public class App {
         } catch (Exception e) {
             System.out.println("[General] An error occured while closing the thread.\nHowever, the program will continue to run.");
         }
+
+        // I remove the close.txt file in the OS's download folder
+        try {
+            Files.deleteIfExists(Paths.get(System.getProperty("user.home") + "/Downloads/stop.txt"));
+        } catch (IOException e) {
+            System.out.println("[General] An error occured while deleting the stop.txt file.");
+        }
         
         System.out.println("[General] Closing database connection...");
         databaseHandler.close();
-    }
-
-    public static Thread startDownloadWatcher(){
-        downloadWatcherThread = new Thread(() -> {
-            try {
-                downloadWatcher = new DownloadWatcher();
-            } catch (InterruptedException e) {
-                e.printStackTrace();
-            }
-        });
-        downloadWatcherThread.start();
-        return downloadWatcherThread;
     }
 
     public static DatabaseHandler getDatabaseHandler() {
         return databaseHandler;
     }
 
+    public static void setDownloadWatcher(DownloadWatcher newDownloadWatcher){
+        System.out.println("Registered function.");
+        App.downloadWatcher = newDownloadWatcher;
+    }
 
     public static void setDownloadWatcher(Thread newDownloadWatcherThread){
         downloadWatcherThread = newDownloadWatcherThread;
@@ -153,10 +153,6 @@ public class App {
 
     public static Thread getDownloadWatcher(){
         return downloadWatcherThread;
-    }
-
-    public static void stopRealTimeProtection() {
-        downloadWatcherThread.interrupt();
     }
 
     public static ConfigurationHandler getConfigurationHandler() {
@@ -189,7 +185,7 @@ public class App {
         System.exit(0);
     }
 
-    public void setProtectionStatus(boolean status) {
+    public static void setProtectionStatus(boolean status) {
         downloadWatcher.setRealTimeProtection(status);
     }
 }
