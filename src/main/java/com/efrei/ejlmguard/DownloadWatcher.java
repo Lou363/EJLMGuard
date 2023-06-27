@@ -3,6 +3,9 @@ package com.efrei.ejlmguard;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.time.LocalDateTime;
+import java.time.format.DateTimeFormatter;
+import java.awt.Desktop;
 
 import com.efrei.ejlmguard.GUI.DetectorName;
 import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
@@ -26,6 +29,31 @@ public class DownloadWatcher { // implements Runnable {
     }
 
 
+    // Fonction qui déplace le fichier dans le dossier de quarantaine
+    public void moveToQuarantine(File file){
+        // Déplacer le fichier dans un dossier sur le bureau
+            
+        String desktopPath = System.getProperty("user.home") + "/Desktop";
+        String warningDirPath = desktopPath + "/warning";
+
+        // Créer le dossier "warning" sur le bureau s'il n'existe pas déjà
+        File warningDir = new File(warningDirPath);
+        if (!warningDir.exists()) {
+             warningDir.mkdir();
+        }
+
+        // Déplacer le fichier dans le dossier "warning" sur le bureau
+        // Le nouveau chemin du fichier déplacé est construit en ajoutant un timestamp au nom du fichier
+        LocalDateTime now = LocalDateTime.now();
+        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
+        String timestamp = now.format(formatter);
+        File newFilePath = new File(warningDirPath + "/" + timestamp + "_" + file.getName() + ".qrt");
+        if (file.renameTo(newFilePath)) {
+            System.out.println("Le fichier a été déplacé dans le dossier restreint : " + newFilePath.getAbsolutePath());
+        } else {
+            System.out.println("Impossible de déplacer le fichier dans le dossier restreint.");
+        }
+    }
 
     public void handleDownloadedFile(Path filePath) {
         if(!realTimeProtection) {
@@ -57,11 +85,15 @@ public class DownloadWatcher { // implements Runnable {
         // Récupérer le MD5 du fichier
         String md5 = signatureUtils.getMD5();
         // Vérifier si le fichier est sûr en utilisant isHashInDatabase
-        boolean isSafe = databaseHandler.isHashInDatabase(md5);
+        boolean isindb = databaseHandler.isHashInDatabase(md5);
 
-        if (isSafe) {
+        if (isindb) {
             System.out.println("Le fichier n'est pas sûr.");
             new ThreatDetectedGUI(databaseHandler.findDescription(md5), filePath.toString(), DetectorName.REALTIME);
+
+            // Appeler fonction qui déplace le fichier dans le dossier de quarantaine
+            moveToQuarantine(file);
+
         } else {
             System.out.println("Le fichier est sûr.");
         }
