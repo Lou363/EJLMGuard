@@ -59,10 +59,12 @@ public class GUI_swing extends JFrame {
         leftPanel.add(analyseLabel);
 
         selectFileLabel = new JLabel("Sélectionner le fichier à analyser");
+        selectFileLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         selectFileLabel.setBounds(14, 48, 200, 17);
         leftPanel.add(selectFileLabel);
 
         enterPathLabel = new JLabel("ou entrez le chemin menant au fichier");
+        enterPathLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         enterPathLabel.setBounds(14, 69, 228, 17);
         leftPanel.add(enterPathLabel);
 
@@ -72,6 +74,7 @@ public class GUI_swing extends JFrame {
 
         browseButton = new JButton("Parcourir");
         browseButton.setBounds(204, 44, 77, 21);
+        browseButton.setFont(new Font("Arial", Font.PLAIN, 10));
         browseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -97,6 +100,7 @@ public class GUI_swing extends JFrame {
 
         analyseButton = new JButton("Analyser");
         analyseButton.setBounds(100, 203, 98, 40);
+        analyseButton.setFont(new Font("Arial", Font.PLAIN, 10));
         analyseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
@@ -107,15 +111,18 @@ public class GUI_swing extends JFrame {
 
         JLabel pathFormatLabel = new JLabel("sous la forme ..\\..\\..");
         pathFormatLabel.setBounds(14, 86, 228, 17);
+        pathFormatLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         leftPanel.add(pathFormatLabel);
 
         watcherCheckBox = new JCheckBox("Activée");
         watcherCheckBox.setBounds(164, 158, 100, 20);
+        watcherCheckBox.setFont(new Font("Arial", Font.PLAIN, 10));
         watcherCheckBox.setSelected(true);
         leftPanel.add(watcherCheckBox);
 
         JCheckBox virusTotalCheckBox = new JCheckBox("Activer l'analyse web VirusTotal");
         virusTotalCheckBox.setBounds(57, 156, 200, 20);
+        virusTotalCheckBox.setFont(new Font("Arial", Font.PLAIN, 10));
         leftPanel.add(virusTotalCheckBox);
 
         // Right Panel
@@ -139,11 +146,13 @@ public class GUI_swing extends JFrame {
         rightPanel.add(settingsLabel);
 
         JLabel watcherLabel = new JLabel("Surveillance en temps réel :");
+        watcherLabel.setFont(new Font("Arial", Font.PLAIN, 10));
         watcherLabel.setBounds(14, 158, 200, 17);
         rightPanel.add(watcherLabel);
 
         stopButton = new JButton("Arreter");
         stopButton.setBounds(125, 217, 63, 32);
+        stopButton.setFont(new Font("Arial", Font.PLAIN, 10));
         stopButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {

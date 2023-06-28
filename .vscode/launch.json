@@ -6,12 +6,18 @@
     "configurations": [
         {
             "type": "java",
+            "name": "GUI_swing",
+            "request": "launch",
+            "mainClass": "com.efrei.ejlmguard.GUI.GUI_swing",
+            "projectName": "ejlm"
+        },
+        {
+            "type": "java",
             "name": "GUI_Main",
             "request": "launch",
             "mainClass": "com.efrei.ejlmguard.GUI.GUI_Main",
             "projectName": "ejlm",
             "vmArgs": "--module-path ${fileWorkspaceFolder}\\src\\main\\java\\com\\efrei\\ejlmguard\\GUI\\javafx-sdk-19\\lib --add-modules=javafx.controls,javafx.fxml"
-
         },
         {
             "type": "java",
