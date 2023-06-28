@@ -3,9 +3,6 @@ package com.efrei.ejlmguard;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
-import java.time.LocalDateTime;
-import java.time.format.DateTimeFormatter;
-import java.awt.Desktop;
 
 import com.efrei.ejlmguard.GUI.DetectorName;
 import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
@@ -16,6 +13,7 @@ public class DownloadWatcher { // implements Runnable {
     private boolean realTimeProtection = true;
     private final String DOWNLOAD_DIR;
     private File endFile;
+    private final String[] bannedExtensions = {".qrt", ".part", ".crdownload"};
     //private SignatureUtilities signatureUtilities;
     private DatabaseHandler databaseHandler;
 
@@ -28,36 +26,15 @@ public class DownloadWatcher { // implements Runnable {
         this.databaseHandler = App.getDatabaseHandler();
     }
 
-
-    // Fonction qui déplace le fichier dans le dossier de quarantaine
-    public void moveToQuarantine(File file){
-        // Déplacer le fichier dans un dossier sur le bureau
-            
-        String desktopPath = System.getProperty("user.home") + "/Desktop";
-        String warningDirPath = desktopPath + "/warning";
-
-        // Créer le dossier "warning" sur le bureau s'il n'existe pas déjà
-        File warningDir = new File(warningDirPath);
-        if (!warningDir.exists()) {
-             warningDir.mkdir();
-        }
-
-        // Déplacer le fichier dans le dossier "warning" sur le bureau
-        // Le nouveau chemin du fichier déplacé est construit en ajoutant un timestamp au nom du fichier
-        LocalDateTime now = LocalDateTime.now();
-        DateTimeFormatter formatter = DateTimeFormatter.ofPattern("yyyyMMdd_HHmmss");
-        String timestamp = now.format(formatter);
-        File newFilePath = new File(warningDirPath + "/" + timestamp + "_" + file.getName() + ".qrt");
-        if (file.renameTo(newFilePath)) {
-            System.out.println("Le fichier a été déplacé dans le dossier restreint : " + newFilePath.getAbsolutePath());
-        } else {
-            System.out.println("Impossible de déplacer le fichier dans le dossier restreint.");
-        }
-    }
-
     public void handleDownloadedFile(Path filePath) {
         if(!realTimeProtection) {
             return;
+        }
+        // If the extension is in the bannedExtensions array, we don't check the file
+        for (String extension : bannedExtensions) {
+            if (filePath.toString().endsWith(extension)) {
+                return;
+            }
         }
         System.out.println("Nouveau fichier téléchargé : " + filePath.toString());
 
@@ -66,7 +43,7 @@ public class DownloadWatcher { // implements Runnable {
 
         // On attend une seconde pour que le fichier soit libre
         try {
-            Thread.sleep(1000);
+            Thread.sleep(500);
         } catch (InterruptedException e) {
             e.printStackTrace();
         }
@@ -92,7 +69,7 @@ public class DownloadWatcher { // implements Runnable {
             new ThreatDetectedGUI(databaseHandler.findDescription(md5), filePath.toString(), DetectorName.REALTIME);
 
             // Appeler fonction qui déplace le fichier dans le dossier de quarantaine
-            moveToQuarantine(file);
+            //moveToQuarantine(file);
 
         } else {
             System.out.println("Le fichier est sûr.");

@@ -129,7 +129,7 @@ public class App {
 
         // I remove the close.txt file in the OS's download folder
         try {
-            Files.deleteIfExists(Paths.get(System.getProperty("user.home") + "/Downloads/stop.txt"));
+            Files.deleteIfExists(Paths.get(System.getProperty("user.home") + "/stop.txt"));
         } catch (IOException e) {
             System.out.println("[General] An error occured while deleting the stop.txt file.");
         }
