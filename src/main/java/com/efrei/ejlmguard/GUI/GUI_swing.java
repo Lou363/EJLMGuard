@@ -1,9 +1,12 @@
 package com.efrei.ejlmguard.GUI;
 
 import javax.swing.*;
+import javax.swing.filechooser.FileSystemView;
+
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
 
 
 public class GUI_swing extends JFrame {
@@ -72,9 +75,24 @@ public class GUI_swing extends JFrame {
         browseButton.addActionListener(new ActionListener() {
             @Override
             public void actionPerformed(ActionEvent e) {
-                findFile();
-            }
-        });
+                JFileChooser choose = new JFileChooser(
+                 FileSystemView
+                .getFileSystemView()
+                .getHomeDirectory()
+                );
+
+                    // Ouvrez le fichier
+                int res = choose.showOpenDialog(null);
+                // Enregistrez le fichier
+                // int res = choose.showSaveDialog(null);
+                if (res == JFileChooser.APPROVE_OPTION) {
+                File file = choose.getSelectedFile();
+                pathTextField.setText(file.getAbsolutePath());
+                
+                }
+                            //findFile();
+                        }
+                    });
         leftPanel.add(browseButton);
 
         analyseButton = new JButton("Analyser");
