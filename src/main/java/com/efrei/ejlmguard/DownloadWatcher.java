@@ -12,7 +12,7 @@ import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
 
 public class DownloadWatcher { // implements Runnable {
 
-    private boolean continueOperations;
+    private boolean continueOperations = true;
     private boolean realTimeProtection = true;
     private final String DOWNLOAD_DIR;
     private File endFile;
@@ -97,7 +97,6 @@ public class DownloadWatcher { // implements Runnable {
             recursiveRegister(dir, watchService);
             System.out.println("[REALTIME] Fin de l'indexage. Tout est prêt !\n");
             System.out.println("Surveillance du répertoire " + DOWNLOAD_DIR + " en cours...");
-            boolean continueOperations = true; // Variable pour contrôler l'exécution continue
             
             while (continueOperations) {
                 WatchKey key;

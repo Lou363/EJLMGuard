@@ -162,11 +162,11 @@ public class GUI_swing extends JFrame {
             public void actionPerformed(ActionEvent e){
                 if (watcherCheckBox.isSelected()){
                     watcherCheckBox.setText("Activée");
-                    //App.setProtectionStatus(true);
+                    App.setProtectionStatus(true);
                 }
                 else{
                     watcherCheckBox.setText("Désactivée");
-                    //App.setProtectionStatus(false);
+                    App.setProtectionStatus(false);
                 }
             }
         });
