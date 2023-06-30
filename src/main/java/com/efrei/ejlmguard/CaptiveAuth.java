@@ -4,7 +4,7 @@ import okhttp3.*;
 import java.io.IOException;
 
 public class CaptiveAuth {
-    public static void postAuth throws IOException(String fwAdress){
+    public static void postAuth(String fwAdress) throws IOException{
         OkHttpClient client = new OkHttpClient();
 
         String url = "http://"+fwAdress+":8002/index.php?zone=private_network";
