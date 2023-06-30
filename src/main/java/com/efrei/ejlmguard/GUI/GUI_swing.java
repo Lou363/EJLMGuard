@@ -36,7 +36,7 @@ public class GUI_swing extends JFrame {
 
     public GUI_swing() {
         setTitle("EJLMGuard");
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         setPreferredSize(new Dimension(650, 373));
 
         // Set OS Look and Feel
