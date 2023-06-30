@@ -12,7 +12,6 @@ import javax.swing.SwingUtilities;
 
 import com.efrei.ejlmguard.GUI.DatabasePusher;
 import com.efrei.ejlmguard.GUI.GUI_Main;
-import com.efrei.ejlmguard.GUI.GUI_swing;
 import com.efrei.ejlmguard.GUI.UpdateGUI;
 
 
@@ -35,6 +34,24 @@ public class App {
          * #             CAPTIVE UNLOCKING      #
          * ######################################
          */
+        Boolean captivechecked = false;
+        while(!captivechecked)
+        try{
+            if(CaptiveAuth.InternetCheck() == 0){
+                System.out.println("Internet is working");
+                captivechecked = true;
+            }
+            else{
+                System.out.println("Authenticating captive portal...");
+                CaptiveAuth.postAuth("192.168.1.254");
+                CaptiveAuth.getAuth("192.168.1.254");
+            }
+            
+        }
+        catch (Exception e){
+            System.out.println("something went wrong: " + e);
+            Thread.sleep(1000);
+        }
 
 
 
@@ -111,6 +128,7 @@ public class App {
         SwingUtilities.invokeLater(() -> {
                 //DatabasePusher db = new DatabasePusher();
                 GUI_swing gui_swing = new GUI_swing();
+        GUI_Main.main(args);
 
                 // Add a window listener to the DatabasePusher window
                 gui_swing.addWindowListener(new WindowAdapter() {
@@ -128,6 +146,7 @@ public class App {
             }
             System.out.println("[General] GUI closed.");
         //downloadWatcher.stop();
+        downloadWatcher.stop();
 
 
         /* ######################################
@@ -135,6 +154,8 @@ public class App {
          * ######################################
          * 
          */
+
+         downloadWatcher.stop();
 
         try {
             downloadWatcherThread.join();
