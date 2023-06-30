@@ -3,6 +3,9 @@ package com.efrei.ejlmguard;
 import java.io.File;
 import java.io.IOException;
 import java.nio.file.*;
+import java.nio.file.attribute.BasicFileAttributes;
+import static java.nio.file.StandardWatchEventKinds.*;
+
 
 import com.efrei.ejlmguard.GUI.DetectorName;
 import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
@@ -19,13 +22,17 @@ public class DownloadWatcher { // implements Runnable {
 
     public DownloadWatcher() throws InterruptedException {
         // J'initialise le chemin du dossier de téléchargement
-        this.DOWNLOAD_DIR = System.getProperty("user.home") + "/Downloads";
+        this.DOWNLOAD_DIR = System.getProperty("user.home");// + "/Downloads";
         this.continueOperations = true;
 
         //signatureUtilities = new SignatureUtilities();
         this.databaseHandler = App.getDatabaseHandler();
     }
 
+    /* ##################################################
+     * #           ANALYSE EN CAS DE MOUVEMENT          #
+     * ##################################################
+     */
     public void handleDownloadedFile(Path filePath) {
         if(!realTimeProtection) {
             return;
@@ -77,49 +84,95 @@ public class DownloadWatcher { // implements Runnable {
 
     }
 
+    /* ##################################################
+     * #           SURVEILLANCE DU DOSSIER              #
+     * ##################################################
+     */
+
     public void run() {
         try {
-            // Crée un objet WatchService
             WatchService watchService = FileSystems.getDefault().newWatchService();
-
-            // Enregistre le répertoire pour la surveillance des événements de création
             Path dir = Paths.get(DOWNLOAD_DIR);
-            dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
-
+            System.out.println("[REALTIME] Début de l'indexage, cela peut prendre quelques minutes...");
+            recursiveRegister(dir, watchService);
+            System.out.println("[REALTIME] Fin de l'indexage. Tout est prêt !\n");
             System.out.println("Surveillance du répertoire " + DOWNLOAD_DIR + " en cours...");
-
-            // Boucle infinie pour attendre les événements de création de fichiers
+            boolean continueOperations = true; // Variable pour contrôler l'exécution continue
+            
             while (continueOperations) {
-                // Attend les événements
-                WatchKey key = watchService.take();
+                WatchKey key;
+                try {
+                    key = watchService.take();
+                } catch (InterruptedException e) {
+                    break; // Sortir de la boucle si le thread est interrompu
+                }
 
-                // Parcourt tous les événements reçus
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = event.kind();
-
-                    // Vérifie si un nouveau fichier a été créé
-                    if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
-                        // Récupère le nom du fichier créé
+                    if (kind == ENTRY_CREATE || kind == ENTRY_MODIFY || kind == ENTRY_DELETE) {
                         WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                         Path filePath = dir.resolve(pathEvent.context());
-
-                        // Effectue une action sur le fichier téléchargé
                         handleDownloadedFile(filePath);
                     }
                 }
 
-                // Réinitialise la clé pour la prochaine itération
                 boolean valid = key.reset();
                 if (!valid) {
-                    // La clé n'est plus valide, arrête la surveillance
-                    break;
+                    break; // Sortir de la boucle si la clé n'est plus valide
                 }
             }
-        } catch (IOException | InterruptedException e) {
+            
+            System.out.println("Arrêt de la surveillance du répertoire " + DOWNLOAD_DIR);
+            watchService.close();
+        } catch (IOException e) {
             e.printStackTrace();
         }
     }
 
+    // Nous enrengistrons les sous répertoire de manière récursive afin d'ignorer AppData si sous Windows
+    private void recursiveRegister(Path dir, WatchService watchService) throws IOException {
+        if (!isWindows() || !isAppDataDirectory(dir)) {
+            try {
+                // System.out.println("Enregistrement du répertoire " + dir.toString() + " en cours...");
+                dir.register(watchService, ENTRY_CREATE);
+            } catch (AccessDeniedException e) {
+                // Ignorer le répertoire si l'accès est refusé
+                return;
+            }
+        }
+
+        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
+            for (Path subPath : stream) {
+                if (Files.isDirectory(subPath)) {
+                    try {
+                        recursiveRegister(subPath, watchService);
+                    } catch (AccessDeniedException e) {
+                        // Ignorer le sous-répertoire si l'accès est refusé
+                    }
+                }
+            }
+        }
+    }
+
+
+    // Détecte si le système d'exploitation est Windows
+    private boolean isWindows() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.contains("windows");
+    }
+
+    // Si nous sommes sous Windows, nous ignorons le dossier AppData
+    private boolean isAppDataDirectory(Path dir) {
+        String path = dir.toString();
+        return path.contains("AppData");
+    }
+
+
+    /* ##################################################
+     * #        FIN DE LA SURVEILLANCE DU DOSSIER       #   
+     * ##################################################
+     */
+    // Cette fonction permet de mettre fin à la surveillance du dossier de téléchargement
     public void setRealTimeProtection(boolean status) {
         this.realTimeProtection = status;
         if(realTimeProtection) 
@@ -128,7 +181,9 @@ public class DownloadWatcher { // implements Runnable {
             System.out.println("[EJLMGuard] Protection en temps réel désactivée.");
     }
 
-    public void stop() {
+    public void stop() 
+    {
+        System.out.println("[EJLMGuard] Arrêt de la protection en temps réel demandé.");
         this.continueOperations = false;
         // I make an event in the download folder to wake up the thread
         // I create a file and delete it to wake up the thread

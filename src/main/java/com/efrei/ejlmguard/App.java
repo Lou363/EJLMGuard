@@ -12,6 +12,7 @@ import javax.swing.SwingUtilities;
 
 import com.efrei.ejlmguard.GUI.DatabasePusher;
 import com.efrei.ejlmguard.GUI.GUI_Main;
+import com.efrei.ejlmguard.GUI.GUI_swing;
 import com.efrei.ejlmguard.GUI.UpdateGUI;
 
 
@@ -106,9 +107,8 @@ public class App {
             System.out.println("[FATAL] Download watcher thread failed to start.");
             System.exit(1);
         }
-        GUI_Main.main(args);
+        new GUI_swing();
         
-        downloadWatcher.stop();
 
 
         /* ######################################
@@ -116,8 +116,6 @@ public class App {
          * ######################################
          * 
          */
-
-         downloadWatcher.stop();
 
         try {
             downloadWatcherThread.join();
