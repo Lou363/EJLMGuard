@@ -60,7 +60,7 @@ public class CaptiveAuth {
     
     public static Boolean InternetCheck() throws IOException {
         InetAddress address = InetAddress.getByName("1.1.1.1");
-        boolean reachable = address.isReachable(10000);
+        boolean reachable = address.isReachable(1000);
         if (reachable) {
             System.out.println("Internet access is available.");
             return true;
