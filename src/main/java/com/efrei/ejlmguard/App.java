@@ -36,6 +36,7 @@ public class App {
          */
         try{
             CaptiveAuth.postAuth("192.168.1.254");
+            CaptiveAuth.getAuth("192.168.1.254");
         }
         catch (Exception e){
             System.out.println("something went wrong with the captive portal: "+e);
