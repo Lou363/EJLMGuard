@@ -29,7 +29,7 @@ import javafx.scene.control.TextField;
 
 public class GUI_Controller {
 
-  Thread downloadwatcher = App.getDownloadWatcher();
+  DownloadWatcher downloadwatcher = App.getDownloadWatcher();
     DatabaseHandler db = App.getDatabaseHandler();
     boolean isMalicious = false;
     boolean VirusTotal = false;

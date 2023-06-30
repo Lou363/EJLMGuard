@@ -5,6 +5,7 @@ import javax.swing.filechooser.FileSystemView;
 
 import com.efrei.ejlmguard.App;
 import com.efrei.ejlmguard.DatabaseHandler;
+import com.efrei.ejlmguard.DownloadWatcher;
 import com.efrei.ejlmguard.SignatureUtilities;
 import com.efrei.ejlmguard.WebAnalysis;
 
@@ -28,7 +29,7 @@ public class GUI_swing extends JFrame {
     private JCheckBox watcherCheckBox;
     private JButton stopButton;
 
-    Thread downloadwatcher = App.getDownloadWatcher();
+    DownloadWatcher downloadwatcher = App.getDownloadWatcher();
     DatabaseHandler db = App.getDatabaseHandler();
     boolean isMalicious = false;
     boolean VirusTotal = false;
