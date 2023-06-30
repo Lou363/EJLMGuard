@@ -107,8 +107,32 @@ public class App {
             System.out.println("[FATAL] Download watcher thread failed to start.");
             System.exit(1);
         }
-        new GUI_swing();
-        
+        //GUI_Main.main(args);
+        final CountDownLatch latch_interafce = new CountDownLatch(1); // Create a latch to synchronize threads
+        SwingUtilities.invokeLater(() -> {
+                //DatabasePusher db = new DatabasePusher();
+                GUI_swing gui_swing = new GUI_swing();
+
+                // Add a window listener to the DatabasePusher window
+                gui_swing.addWindowListener(new WindowAdapter() {
+                    @Override
+                    public void windowClosed(WindowEvent e) {
+                        latch_interafce.countDown(); // Signal that the window is closed
+                    }
+                });
+
+                System.out.println("[General] dataset.json exists, starting update...");
+            });
+
+            try {
+                latch_interafce.await(); // Wait until the latch is counted down
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            } finally {
+                databaseHandler.close();
+                databaseHandler = new DatabaseHandler();
+            }
+        //downloadWatcher.stop();
 
 
         /* ######################################
