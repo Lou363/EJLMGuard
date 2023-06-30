@@ -2,6 +2,7 @@ package com.efrei.ejlmguard;
 
 import okhttp3.*;
 import java.io.IOException;
+import java.net.InetAddress;
 
 public class CaptiveAuth {
     public static void postAuth(String fwAdress) throws IOException{
@@ -57,4 +58,16 @@ public class CaptiveAuth {
         response.close();
     }
     
+    public static Boolean InternetCheck() throws IOException {
+        InetAddress address = InetAddress.getByName("1.1.1.1");
+        boolean reachable = address.isReachable(10000);
+        if (reachable) {
+            System.out.println("Internet access is available.");
+            return true;
+        } else {
+            System.out.println("Internet access is not available.");
+            return false;
+        }
+        
+    }
 }
