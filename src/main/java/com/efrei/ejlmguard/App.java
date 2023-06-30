@@ -141,8 +141,6 @@ public class App {
          * 
          */
 
-         //downloadWatcher.stop();
-
         try {
             downloadWatcherThread.join();
         } catch (InterruptedException e) {
