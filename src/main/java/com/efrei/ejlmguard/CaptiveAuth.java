@@ -1,8 +1,10 @@
 package com.efrei.ejlmguard;
 
 import okhttp3.*;
+
+import java.io.BufferedReader;
 import java.io.IOException;
-import java.net.InetAddress;
+import java.io.InputStreamReader;
 
 public class CaptiveAuth {
     public static void postAuth(String fwAdress) throws IOException{
@@ -30,7 +32,6 @@ public class CaptiveAuth {
                 .addHeader("Connection", "close")
                 .build();
         Response response = client.newCall(request).execute();
-        System.out.println(response.body().string());
         response.close();
     }
 
@@ -51,23 +52,22 @@ public class CaptiveAuth {
                 .build();
 
         Response response = client.newCall(request).execute();
-
-        System.out.println(response.code());
-        System.out.println(response.body().string());
-
         response.close();
     }
     
-    public static Boolean InternetCheck() throws IOException {
-        InetAddress address = InetAddress.getByName("1.1.1.1");
-        boolean reachable = address.isReachable(1000);
-        if (reachable) {
-            System.out.println("Internet access is available.");
-            return true;
-        } else {
-            System.out.println("Internet access is not available.");
-            return false;
+    public static int InternetCheck() throws IOException, InterruptedException {
+        String command = "ping google.com";
+        ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
+        Process process = processBuilder.start();
+
+        int exitCode = process.waitFor();
+        BufferedReader reader = new BufferedReader(new InputStreamReader(process.getInputStream()));
+        String line;
+        while ((line = reader.readLine()) != null) {
+            // Process the output if needed
+            System.out.println(line);
         }
-        
+        System.out.println("Exit code : " + exitCode);
+        return exitCode;
     }
 }

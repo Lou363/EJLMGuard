@@ -34,14 +34,22 @@ public class App {
          * #             CAPTIVE UNLOCKING      #
          * ######################################
          */
-        
+        Boolean captivechecked = false;
+        while(!captivechecked)
         try{
-            CaptiveAuth.postAuth("192.168.1.254");
-            CaptiveAuth.getAuth("192.168.1.254");
-            CaptiveAuth.InternetCheck();
+            if(CaptiveAuth.InternetCheck() == 0){
+                System.out.println("Internet is working");
+                captivechecked = true;
+            }
+            else{
+                System.out.println("Authenticating captive portal...");
+                CaptiveAuth.postAuth("192.168.1.254");
+                CaptiveAuth.getAuth("192.168.1.254");
+            }
+            
         }
         catch (Exception e){
-            System.out.println("something went wrong with the captive portal: "+e);
+            System.out.println("something went wrong: " + e);
             Thread.sleep(1000);
         }
         
