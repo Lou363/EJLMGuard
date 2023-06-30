@@ -7,6 +7,10 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 
 public class CaptiveAuth {
+    private static boolean isWindows() {
+        String osName = System.getProperty("os.name").toLowerCase();
+        return osName.contains("windows");
+    }
     public static void postAuth(String fwAdress) throws IOException{
         OkHttpClient client = new OkHttpClient();
 
@@ -56,7 +60,12 @@ public class CaptiveAuth {
     }
     
     public static int InternetCheck() throws IOException, InterruptedException {
-        String command = "ping google.com";
+        if(isWindows()){
+            String command = "ping google.com";
+        }
+        else{
+            String command = "ping -c 2 google.com";
+        }
         ProcessBuilder processBuilder = new ProcessBuilder(command.split(" "));
         Process process = processBuilder.start();
 
