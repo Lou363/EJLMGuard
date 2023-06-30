@@ -133,14 +133,14 @@ public class DownloadWatcher { // implements Runnable {
     private void recursiveRegister(Path dir, WatchService watchService) throws IOException {
         if (!isWindows() || !isAppDataDirectory(dir)) {
             try {
-                // System.out.println("Enregistrement du répertoire " + dir.toString() + " en cours...");
-                dir.register(watchService, ENTRY_CREATE);
+                if (!isMacHiddenFile(dir)) {
+                    dir.register(watchService, ENTRY_CREATE);
+                }
             } catch (AccessDeniedException e) {
                 // Ignorer le répertoire si l'accès est refusé
                 return;
             }
         }
-
         try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
             for (Path subPath : stream) {
                 if (Files.isDirectory(subPath)) {
@@ -155,6 +155,8 @@ public class DownloadWatcher { // implements Runnable {
     }
 
 
+    // SPECIFITE PAR SYSTEME D'EXPLOITATION
+
     // Détecte si le système d'exploitation est Windows
     private boolean isWindows() {
         String osName = System.getProperty("os.name").toLowerCase();
@@ -166,6 +168,19 @@ public class DownloadWatcher { // implements Runnable {
         String path = dir.toString();
         return path.contains("AppData");
     }
+
+    private boolean isMacHiddenFile(Path file) throws IOException {
+    if (isMac()) {
+        return Files.isHidden(file);
+    }
+    return false;
+}
+
+// Détecte si le système d'exploitation est macOS
+private boolean isMac() {
+    String osName = System.getProperty("os.name").toLowerCase();
+    return osName.contains("mac");
+}
 
 
     /* ##################################################
