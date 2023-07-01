@@ -2,13 +2,19 @@ package com.efrei.ejlmguard.GUI;
 
 import javax.swing.*;
 
-import com.efrei.ejlmguard.ThreatQuarantineHandler;
+import com.efrei.ejlmguard.*;
 
 import java.awt.*;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.io.File;
+
+import javax.sound.sampled.AudioInputStream;
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.Clip;
+import javax.sound.sampled.LineEvent;
+import javax.sound.sampled.LineListener;
 
 public class ThreatDetectedGUI extends JFrame {
     
@@ -94,6 +100,7 @@ public class ThreatDetectedGUI extends JFrame {
         }
         // I demmand the window to be on top of all other windows
         requestFocus();
+        playSound();
     }
 
     /* ################################
@@ -129,6 +136,34 @@ public class ThreatDetectedGUI extends JFrame {
             ThreatQuarantineHandler.moveToQuarantine(file);
             System.out.println("[Threat Handler] Quarantine successful.");
             dispose();
+        }
+    }
+
+    /* ######################################
+     * #        PLAY WARNING SOUND          #
+     * ######################################
+     */
+    private void playSound() {
+        try {
+            // Load the sound from the resources folder
+            AudioInputStream audioInputStream = AudioSystem.getAudioInputStream(
+                    App.class.getResourceAsStream("/soundAlert.wav"));
+
+            // Create a Clip instance to play the sound
+            Clip clip = AudioSystem.getClip();
+
+            // Open the audio stream and start playing the sound
+            clip.open(audioInputStream);
+            clip.start();
+
+            // Release system resources when the sound is complete
+            clip.addLineListener(event -> {
+                if (event.getType() == LineEvent.Type.STOP) {
+                    clip.close();
+                }
+            });
+        } catch (Exception e) {
+            e.printStackTrace();
         }
     }
 }
