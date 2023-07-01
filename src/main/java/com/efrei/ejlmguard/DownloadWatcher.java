@@ -2,19 +2,19 @@ package com.efrei.ejlmguard;
 
 import java.io.File;
 import java.io.IOException;
+import java.nio.channels.FileChannel;
 import java.nio.file.*;
-import java.nio.file.attribute.BasicFileAttributes;
-import static java.nio.file.StandardWatchEventKinds.*;
-
 
 import com.efrei.ejlmguard.GUI.DetectorName;
 import com.efrei.ejlmguard.GUI.ThreatDetectedGUI;
 
-public class DownloadWatcher { // implements Runnable {
+public class DownloadWatcher {
 
     private boolean continueOperations = true;
     private boolean realTimeProtection = true;
     private final String DOWNLOAD_DIR;
+    private static final int MAX_RETRY_COUNT = 3;
+    private static final long RETRY_DELAY_MS = 1000;
     private File endFile;
     private final String[] bannedExtensions = {".qrt", ".part", ".crdownload"};
     //private SignatureUtilities signatureUtilities;
@@ -22,7 +22,7 @@ public class DownloadWatcher { // implements Runnable {
 
     public DownloadWatcher() throws InterruptedException {
         // J'initialise le chemin du dossier de téléchargement
-        this.DOWNLOAD_DIR = System.getProperty("user.home");// + "/Downloads";
+        this.DOWNLOAD_DIR = System.getProperty("user.home") + "/Downloads";
         this.continueOperations = true;
 
         //signatureUtilities = new SignatureUtilities();
@@ -43,25 +43,42 @@ public class DownloadWatcher { // implements Runnable {
                 return;
             }
         }
+        if(!continueOperations) {
+            return;
+        }
+        
         System.out.println("Nouveau fichier téléchargé : " + filePath.toString());
 
         // Convertir le chemin du fichier en objet File
         File file = filePath.toFile();
 
-        // On attend une seconde pour que le fichier soit libre
-        try {
-            Thread.sleep(500);
-        } catch (InterruptedException e) {
-            e.printStackTrace();
-        }
-
-        //Si le fichier est occupé, on attend 1 seconde
-        while (file.renameTo(file) == false) {
+        // Wait for the file to be available
+        boolean fileAvailable = false;
+        int retryCount = 0;
+        while (!fileAvailable && retryCount < MAX_RETRY_COUNT) {
             try {
-                Thread.sleep(1000);
-            } catch (InterruptedException e) {
+                // Check if the file can be opened
+                try (FileChannel channel = FileChannel.open(filePath, StandardOpenOption.WRITE)) {
+                    // The file is available
+                    fileAvailable = true;
+                }
+            } catch (NoSuchFileException e) {
+                // File not found, wait and retry
+                retryCount++;
+                try {
+                    Thread.sleep(RETRY_DELAY_MS);
+                } catch (InterruptedException ex) {
+                    ex.printStackTrace();
+                }
+            } catch (IOException e) {
                 e.printStackTrace();
             }
+        }
+
+        // If the file is still not available, handle the error
+        if (!fileAvailable) {
+            System.err.println("File not available: " + filePath);
+            return;
         }
         // Créer une instance de SignatureUtilities pour le nouveau fichier
         SignatureUtilities signatureUtils = new SignatureUtilities(file);
@@ -93,93 +110,27 @@ public class DownloadWatcher { // implements Runnable {
         try {
             WatchService watchService = FileSystems.getDefault().newWatchService();
             Path dir = Paths.get(DOWNLOAD_DIR);
-            System.out.println("[REALTIME] Début de l'indexage, cela peut prendre quelques minutes...");
-            recursiveRegister(dir, watchService);
-            System.out.println("[REALTIME] Fin de l'indexage. Tout est prêt !\n");
+            dir.register(watchService, StandardWatchEventKinds.ENTRY_CREATE);
             System.out.println("Surveillance du répertoire " + DOWNLOAD_DIR + " en cours...");
-            
             while (continueOperations) {
-                WatchKey key;
-                try {
-                    key = watchService.take();
-                } catch (InterruptedException e) {
-                    break; // Sortir de la boucle si le thread est interrompu
-                }
-
+                WatchKey key = watchService.take();
                 for (WatchEvent<?> event : key.pollEvents()) {
                     WatchEvent.Kind<?> kind = event.kind();
-                    if (kind == ENTRY_CREATE || kind == ENTRY_MODIFY || kind == ENTRY_DELETE) {
+                    if (kind == StandardWatchEventKinds.ENTRY_CREATE) {
                         WatchEvent<Path> pathEvent = (WatchEvent<Path>) event;
                         Path filePath = dir.resolve(pathEvent.context());
                         handleDownloadedFile(filePath);
                     }
                 }
-
                 boolean valid = key.reset();
                 if (!valid) {
-                    break; // Sortir de la boucle si la clé n'est plus valide
+                    break;
                 }
             }
-            
-            System.out.println("Arrêt de la surveillance du répertoire " + DOWNLOAD_DIR);
-            watchService.close();
-        } catch (IOException e) {
+        } catch (IOException | InterruptedException e) {
             e.printStackTrace();
         }
     }
-
-    // Nous enrengistrons les sous répertoire de manière récursive afin d'ignorer AppData si sous Windows
-    private void recursiveRegister(Path dir, WatchService watchService) throws IOException {
-        if (!isWindows() || !isAppDataDirectory(dir)) {
-            try {
-                if (!isMacHiddenFile(dir)) {
-                    dir.register(watchService, ENTRY_CREATE);
-                }
-            } catch (AccessDeniedException e) {
-                // Ignorer le répertoire si l'accès est refusé
-                return;
-            }
-        }
-        try (DirectoryStream<Path> stream = Files.newDirectoryStream(dir)) {
-            for (Path subPath : stream) {
-                if (Files.isDirectory(subPath)) {
-                    try {
-                        recursiveRegister(subPath, watchService);
-                    } catch (AccessDeniedException e) {
-                        // Ignorer le sous-répertoire si l'accès est refusé
-                    }
-                }
-            }
-        }
-    }
-
-
-    // SPECIFITE PAR SYSTEME D'EXPLOITATION
-
-    // Détecte si le système d'exploitation est Windows
-    private boolean isWindows() {
-        String osName = System.getProperty("os.name").toLowerCase();
-        return osName.contains("windows");
-    }
-
-    // Si nous sommes sous Windows, nous ignorons le dossier AppData
-    private boolean isAppDataDirectory(Path dir) {
-        String path = dir.toString();
-        return path.contains("AppData");
-    }
-
-    private boolean isMacHiddenFile(Path file) throws IOException {
-    if (isMac()) {
-        return Files.isHidden(file);
-    }
-    return false;
-}
-
-// Détecte si le système d'exploitation est macOS
-private boolean isMac() {
-    String osName = System.getProperty("os.name").toLowerCase();
-    return osName.contains("mac");
-}
 
 
     /* ##################################################
@@ -205,7 +156,7 @@ private boolean isMac() {
             endFile = new File(DOWNLOAD_DIR + "/stop.txt");
             endFile.createNewFile();
             // I write "IGNORE AND DELETE THIS FILE IN FOUND" in the file
-            Files.write(endFile.toPath(), "IGNORE AND DELETE THIS FILE IN FOUND".getBytes());
+            Files.write(endFile.toPath(), "IGNORE AND DELETE THIS FILE IN FOUND \nChecksum: ubisdbusdbui".getBytes());
 
         } catch (IOException e) {
             e.printStackTrace();

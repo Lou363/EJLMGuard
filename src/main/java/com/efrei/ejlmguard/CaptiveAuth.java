@@ -62,7 +62,7 @@ public class CaptiveAuth {
     public static int InternetCheck() throws IOException, InterruptedException {
         String command = "";
         if(isWindows()){
-            command = "ping google.com";
+            command = "ping -n 2 google.com";
         }
         if(!isWindows()){
             command = "ping -c 2 google.com";

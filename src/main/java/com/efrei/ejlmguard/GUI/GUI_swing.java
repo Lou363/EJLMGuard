@@ -335,6 +335,14 @@ setContentPane(verticalBox);
 
     private void shutDown() {
         // Logic for shutting down
+        watcherCheckBox.setEnabled(false);
+        stopButton.setEnabled(false);
+        downloadwatcher.stop();
+        // Message to user
+        JOptionPane.showMessageDialog(null, "Arrêt du service de surveillance en temps réelle effectif.\n"+
+        "Veuillez fermer l'application pour quitter complètement le programme.","Arrêt du service de surveillance",JOptionPane.INFORMATION_MESSAGE);
+        
+        
     }
 
     public static void main(String[] args) {

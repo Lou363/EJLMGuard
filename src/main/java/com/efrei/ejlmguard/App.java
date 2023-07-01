@@ -34,15 +34,16 @@ public class App {
          * #             CAPTIVE UNLOCKING      #
          * ######################################
          */
+        System.out.println("[CAPTIVE] Verifying internet connection...");
         Boolean captivechecked = false;
         while(!captivechecked)
         try{
             if(CaptiveAuth.InternetCheck() == 0){
-                System.out.println("Internet is working");
+                System.out.println("[CAPTIVE] Internet connection verified, no captive portal detected.");
                 captivechecked = true;
             }
             else{
-                System.out.println("Authenticating captive portal...");
+                System.out.println("[CAPTIVE] Captive portal detected.");
                 CaptiveAuth.postAuth("192.168.1.254");
                 CaptiveAuth.getAuth("192.168.1.254");
             }
@@ -114,7 +115,12 @@ public class App {
         
         downloadWatcher = new DownloadWatcher();
         downloadWatcherThread = new Thread(() -> {
-            downloadWatcher.run();
+            try {
+                downloadWatcher.run();
+            } catch (Exception e) {
+                // TODO Auto-generated catch block
+                e.printStackTrace();
+            }
         });
         downloadWatcherThread.start();
         Thread.sleep(1000);
@@ -161,7 +167,7 @@ public class App {
 
         // I remove the close.txt file in the OS's download folder
         try {
-            Files.deleteIfExists(Paths.get(System.getProperty("user.home") + "/stop.txt"));
+            Files.deleteIfExists(Paths.get(System.getProperty("user.home") + "/Downloads/stop.txt"));
         } catch (IOException e) {
             System.out.println("[General] An error occured while deleting the stop.txt file.");
         }

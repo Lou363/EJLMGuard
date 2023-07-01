@@ -78,8 +78,6 @@ public class ThreatDetectedGUI extends JFrame {
         ignoreButton.addActionListener(new IgnoreButtonAction());
         deleteButton.addActionListener(new DeleteButtonAction());
         quarantineButton.addActionListener(new QuarantineButtonAction());
-        // I set the panel to the foreground
-        mainPanel.requestFocus();
         try{
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());
         } catch (Exception e){
@@ -88,6 +86,14 @@ public class ThreatDetectedGUI extends JFrame {
         // I render the window and make it visible
         repaint();
         setVisible(true);
+        // I wait 500ms before I request focus
+        try{
+            Thread.sleep(500);
+        } catch (InterruptedException e){
+            e.printStackTrace();
+        }
+        // I demmand the window to be on top of all other windows
+        requestFocus();
     }
 
     /* ################################
