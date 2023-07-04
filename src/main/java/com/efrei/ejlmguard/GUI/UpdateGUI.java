@@ -26,7 +26,7 @@ public class UpdateGUI extends JFrame{
     public UpdateGUI(boolean launchedInBackground){
         super("Update");
         this.launchedInBackground = launchedInBackground;
-        setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         // Set the look to the OS look
         try{
             UIManager.setLookAndFeel(UIManager.getSystemLookAndFeelClassName());

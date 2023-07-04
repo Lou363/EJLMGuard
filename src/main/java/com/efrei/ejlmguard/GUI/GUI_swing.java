@@ -37,7 +37,7 @@ public class GUI_swing extends JFrame {
 
     public GUI_swing() {
         setTitle("EJLMGuard");
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setPreferredSize(new Dimension(650, 373));
 
         // Set OS Look and Feel
@@ -341,6 +341,7 @@ setContentPane(verticalBox);
         // Message to user
         JOptionPane.showMessageDialog(null, "Arrêt du service de surveillance en temps réelle effectif.\n"+
         "Veuillez fermer l'application pour quitter complètement le programme.","Arrêt du service de surveillance",JOptionPane.INFORMATION_MESSAGE);
+        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
         
         
     }
