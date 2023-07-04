@@ -13,7 +13,7 @@ import okhttp3.*;
 
 
 public class WebAnalysis {
-    private static final String VIRUS_TOTAL_API_KEY = "10fe6404a69483c94f3fbe26437c5242875e699692b99fb5f662cca5d3317495";
+    private static final String VIRUS_TOTAL_API_KEY = "";
     private static final String VIRUS_TOTAL_SCAN_URL = "https://www.virustotal.com/api/v3/files";
 
     private String virusName;
