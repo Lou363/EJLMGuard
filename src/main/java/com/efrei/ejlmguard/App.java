@@ -2,14 +2,17 @@ package com.efrei.ejlmguard;
 
 import java.awt.event.WindowAdapter;
 import java.awt.event.WindowEvent;
+import java.io.File;
 import java.io.IOException;
 
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.util.concurrent.CountDownLatch;
 
+import javax.swing.JOptionPane;
 import javax.swing.SwingUtilities;
 
+import com.efrei.ejlmguard.GUI.CaptiveGUI;
 import com.efrei.ejlmguard.GUI.DatabasePusher;
 import com.efrei.ejlmguard.GUI.GUI_swing;
 import com.efrei.ejlmguard.GUI.UpdateGUI;
@@ -22,39 +25,51 @@ public class App {
     private static DownloadWatcher downloadWatcher;
 
     public static void main(String[] args) throws IOException, InterruptedException {
+
+        /* ###################################
+         * #         INITIALIZATION          #
+         * ###################################
+         */
+        if (isLocked()) {
+            // Another instance is already running, display a message dialog
+            JOptionPane.showMessageDialog(null, "Another instance of " + APP_TITLE + " is already running.", APP_TITLE, JOptionPane.WARNING_MESSAGE);
+            System.exit(0);
+        }
         configurationHandler = new ConfigurationHandler();
-
-
         // databaseHandler = new DatabaseHandler();
         
         databaseHandler = new DatabaseHandler();
+
+        Runtime.getRuntime().addShutdownHook(new Thread() {
+            @Override
+            public void run() {
+                handleInterruption();
+            }
+        });
 
 
         /* ######################################
          * #             CAPTIVE UNLOCKING      #
          * ######################################
          */
-        System.out.println("[CAPTIVE] Verifying internet connection...");
-        Boolean captivechecked = false;
-        while(!captivechecked)
-        try{
-            if(CaptiveAuth.InternetCheck() == 0){
-                System.out.println("[CAPTIVE] Internet connection verified, no captive portal detected.");
-                captivechecked = true;
-            }
-            else{
-                System.out.println("[CAPTIVE] Captive portal detected.");
-                CaptiveAuth.postAuth("192.168.1.254");
-                CaptiveAuth.getAuth("192.168.1.254");
-            }
-            
-        }
-        catch (Exception e){
-            System.out.println("something went wrong: " + e);
-            Thread.sleep(1000);
-        }
+        final CountDownLatch captiveLatch = new CountDownLatch(1); // Create a latch to synchronize threads
 
+        SwingUtilities.invokeLater(() -> {
+            CaptiveGUI captiveGUI = new CaptiveGUI();
+            // Add a window listener to the DatabasePusher window
+            captiveGUI.addWindowListener(new WindowAdapter() {
+                @Override
+                public void windowClosed(WindowEvent e) {
+                    captiveLatch.countDown(); // Signal that the window is closed
+                }
+            });
+        });
 
+            try {
+                captiveLatch.await(); // Wait until the latch is counted down
+            } catch (InterruptedException e) {
+                e.printStackTrace();
+            }
 
         /* #######################################
          * #            VPS UPDATE CHECKING      #
@@ -128,7 +143,9 @@ public class App {
 
         if(downloadWatcher == null){
             System.out.println("[FATAL] Download watcher thread failed to start.");
+            removeLock();
             System.exit(1);
+
         }
         final CountDownLatch latch_interafce = new CountDownLatch(1); // Create a latch to synchronize threads
         SwingUtilities.invokeLater(() -> {
@@ -174,6 +191,7 @@ public class App {
         
         System.out.println("[General] Closing database connection...");
         databaseHandler.close();
+        removeLock();
     }
 
     public static DatabaseHandler getDatabaseHandler() {
@@ -220,10 +238,50 @@ public class App {
         }
 
         // Exit the current program
+        removeLock();
         System.exit(0);
     }
 
     public static void setProtectionStatus(boolean status) {
         downloadWatcher.setRealTimeProtection(status);
+    }
+
+    private static final String LOCK_FILE = "ejlm.lock";
+    private static final String APP_TITLE = "ejlm";
+    
+    // This allows to check if another instance of the program is already running
+    private static boolean isLocked() {
+        try {
+            File file = new File(LOCK_FILE);
+            // Print the path of the lock file
+            if (file.createNewFile()) {
+                return false;  // Lock file created, no other instance is running
+            } else {
+                return true;   // Lock file already exists, another instance is running
+            }
+        } catch (IOException e) {
+            e.printStackTrace();
+            return true;  // Error occurred, assume another instance is running
+        }
+    }
+
+    private static void removeLock() {
+        File file = new File(LOCK_FILE);
+        if (file.exists()) {
+            file.delete();
+        }
+    }
+
+    private static void handleInterruption() {
+        // Handle program interruption here
+        System.out.println("[General] Program interrupted by user.");
+        System.out.println("[General] Closing database connection...");
+        try{
+            databaseHandler.close();
+        } catch (Exception e){
+            System.out.println("[General] An error occured while closing the database connection.");
+        }
+        
+        removeLock();
     }
 }

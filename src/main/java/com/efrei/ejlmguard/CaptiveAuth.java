@@ -6,13 +6,24 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 
+import com.efrei.ejlmguard.GUI.CaptiveGUI;
+
 public class CaptiveAuth {
+
+    private static CaptiveGUI captiveGUI;
+
+    public CaptiveAuth(CaptiveGUI captiveGUI){
+        CaptiveAuth.captiveGUI = captiveGUI;
+    }
+
     private static boolean isWindows() {
         String osName = System.getProperty("os.name").toLowerCase();
+        captiveGUI.updateLabel("Identifying OS...");
         return osName.contains("windows");
     }
     public static void postAuth(String fwAdress) throws IOException{
         OkHttpClient client = new OkHttpClient();
+        captiveGUI.updateLabel("Unlocking captive portal...");
 
         String url = "http://"+fwAdress+":8002/index.php?zone=private_network";
         String bodyContent = "redirurl=http%3A%2F%2Fedge-http.microsoft.com%2Fcaptiveportal%2Fgenerate_204&accept=Login";
@@ -60,6 +71,7 @@ public class CaptiveAuth {
     }
     
     public static int InternetCheck() throws IOException, InterruptedException {
+        captiveGUI.updateLabel("Checking Internet Connection...");
         String command = "";
         if(isWindows()){
             command = "ping -n 2 google.com";
