@@ -171,19 +171,21 @@ public class App {
         } catch (InterruptedException e) {
             System.out.println("[General] Thread interrupted by user.");
         } catch (Exception e) {
-            System.out.println("[General] An error occured while closing the thread.\nHowever, the program will continue to run.");
+            System.out.println("[General] An error occurred while closing the thread.\nHowever, the program will continue to run.");
         }
 
         // I remove the close.txt file in the OS's download folder
         try {
             Files.deleteIfExists(Paths.get(System.getProperty("user.home") + "/Downloads/stop.txt"));
         } catch (IOException e) {
-            System.out.println("[General] An error occured while deleting the stop.txt file.");
+            System.out.println("[General] An error occurred while deleting the stop.txt file.");
         }
         
         System.out.println("[General] Closing database connection...");
         databaseHandler.close();
         removeLock();
+        System.out.println("[GENERAL] Released lock successfully.");
+        System.exit(0);
     }
 
     public static DatabaseHandler getDatabaseHandler() {
