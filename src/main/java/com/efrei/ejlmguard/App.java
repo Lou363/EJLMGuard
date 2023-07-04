@@ -40,14 +40,6 @@ public class App {
         
         databaseHandler = new DatabaseHandler();
 
-        Runtime.getRuntime().addShutdownHook(new Thread() {
-            @Override
-            public void run() {
-                handleInterruption();
-            }
-        });
-
-
         /* ######################################
          * #             CAPTIVE UNLOCKING      #
          * ######################################
@@ -270,18 +262,5 @@ public class App {
         if (file.exists()) {
             file.delete();
         }
-    }
-
-    private static void handleInterruption() {
-        // Handle program interruption here
-        System.out.println("[General] Program interrupted by user.");
-        System.out.println("[General] Closing database connection...");
-        try{
-            databaseHandler.close();
-        } catch (Exception e){
-            System.out.println("[General] An error occured while closing the database connection.");
-        }
-        
-        removeLock();
     }
 }
