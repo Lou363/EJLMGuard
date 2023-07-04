@@ -34,7 +34,7 @@ public class ThreatDetectedGUI extends JFrame {
         file = new File(filePath);
         // I initialize the GUI
         setSize(400, 250);
-        setDefaultCloseOperation(JFrame.DISPOSE_ON_CLOSE);
+        setDefaultCloseOperation(JFrame.DO_NOTHING_ON_CLOSE);
         setLocationRelativeTo(null);
         setResizable(true);
         setLayout(new BorderLayout());
@@ -101,6 +101,7 @@ public class ThreatDetectedGUI extends JFrame {
         // I demmand the window to be on top of all other windows
         requestFocus();
         playSound();
+        
     }
 
     /* ################################
