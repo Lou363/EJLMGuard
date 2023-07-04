@@ -8,7 +8,7 @@
 
 3. Double click the jar file to run it !
 
-4. Enjoy !
+4. **If you want to use VirusTotal web analysis**, you must put your virus total API key in the WebAnalysis.java class.
 
 *Please note that the captive portal is automaticly detected if it exists*
 
